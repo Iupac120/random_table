@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table Generator</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 10px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Dynamic Table Generator</h2>
+
+    <label for="initialRows">Number of Rows:</label>
+    <input type="number" id="initialRows" name="initialRows" min="1" max="10" value="3">
+    <label for="initialCols">Number of Columns:</label>
+    <input type="number" id="initialCols" name="initialCols" min="1" max="30" value="10">
+    <button onclick="generateInitialTable()">Create Initial Table</button><br><br>
+
+    <div id="initialTableContainer"></div>
+
+    <h3>Random Secondary Tables Generator</h3>
+    <label for="randomRows">Random Table Rows:</label>
+    <input type="number" id="randomRows" name="randomRows" min="1" value="3">
+    <label for="randomCols">Random Table Columns:</label>
+    <input type="number" id="randomCols" name="randomCols" min="1" value="3">
+    <label for="numTables">Number of Random Tables:</label>
+    <input type="number" id="numTables" name="numTables" min="1" value="5">
+    <button onclick="generateRandomTables()">Generate Random Tables</button>
+
+    <h3>Randomly Generated Tables</h3>
+    <div id="randomTablesContainer"></div>
+
+    <script>
+        let initialTable = [];
+        let usedRows = new Set();
+        let usedColumns = new Set();
+
+        // Function to generate the initial table with input fields
+        function generateInitialTable() {
+            const numRows = document.getElementById('initialRows').value;
+            const numCols = document.getElementById('initialCols').value;
+            initialTable = [];
+
+            let tableContainer = document.getElementById('initialTableContainer');
+            tableContainer.innerHTML = ''; // Clear previous table
+
+            let table = document.createElement('table');
+            for (let i = 0; i < numRows; i++) {
+                let row = [];
+                let tableRow = document.createElement('tr');
+                for (let j = 0; j < numCols; j++) {
+                    let cell = document.createElement('td');
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `R${i}C${j}`; // Unique ID for each cell
+                    input.placeholder = `R${i+1}C${j+1}`;
+                    row.push(input.id);
+                    cell.appendChild(input);
+                    tableRow.appendChild(cell);
+                }
+                initialTable.push(row);
+                table.appendChild(tableRow);
+            }
+            tableContainer.appendChild(table);
+        }
+
+        // Function to get the values from the initial table
+        function getInitialTableValues() {
+            let tableValues = [];
+            for (let row of initialTable) {
+                let rowValues = [];
+                for (let cellId of row) {
+                    let cellValue = document.getElementById(cellId).value || cellId;
+                    rowValues.push(cellValue);
+                }
+                tableValues.push(rowValues);
+            }
+            return tableValues;
+        }
+
+        // Function to generate random tables based on user input
+        function generateRandomTables() {
+            const randomRows = parseInt(document.getElementById('randomRows').value);
+            const randomCols = parseInt(document.getElementById('randomCols').value);
+            const numTables = parseInt(document.getElementById('numTables').value);
+            const initialTableValues = getInitialTableValues();
+            const totalRows = initialTable.length;
+            const totalCols = initialTable[0].length;
+
+            let randomTablesContainer = document.getElementById('randomTablesContainer');
+            randomTablesContainer.innerHTML = ''; // Clear previous tables
+
+            usedRows.clear();
+            usedColumns.clear();
+
+            for (let i = 0; i < numTables; i++) {
+                let selectedRows = getRandomSelection(totalRows, randomRows, usedRows);
+                let selectedCols = getRandomSelection(totalCols, randomCols, usedColumns);
+
+                if (selectedRows.length === randomRows && selectedCols.length === randomCols) {
+                    let randomTable = [];
+                    for (let row of selectedRows) {
+                        let tableRow = [];
+                        for (let col of selectedCols) {
+                            tableRow.push(initialTableValues[row][col]);
+                        }
+                        randomTable.push(tableRow);
+                    }
+                    displayTable(randomTable, randomTablesContainer);
+                } else {
+                    console.log("Not enough unique rows/columns left to generate another table.");
+                    break;
+                }
+            }
+        }
+
+        // Helper function to generate unique random indices
+        function getRandomSelection(total, count, usedSet) {
+            let selected = [];
+            while (selected.length < count) {
+                let randomIndex = Math.floor(Math.random() * total);
+                if (!usedSet.has(randomIndex)) {
+                    selected.push(randomIndex);
+                    usedSet.add(randomIndex);
+                }
+                if (usedSet.size === total) {
+                    break; // No more unique values left
+                }
+            }
+            return selected;
+        }
+
+        // Helper function to display the generated tables
+        function displayTable(tableData, container) {
+            let table = document.createElement('table');
+            for (let row of tableData) {
+                let tableRow = document.createElement('tr');
+                for (let cell of row) {
+                    let td = document.createElement('td');
+                    td.innerHTML = cell;
+                    tableRow.appendChild(td);
+                }
+                table.appendChild(tableRow);
+            }
+            container.appendChild(table);
+        }
+    </script>
+
+</body>
+</html>
