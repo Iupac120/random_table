@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -154,6 +154,257 @@
             }
             container.appendChild(table);
         }
+    </script>
+
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table Generator with Download</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 10px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Dynamic Table Generator</h2>
+
+    <label for="initialRows">Number of Rows:</label>
+    <input type="number" id="initialRows" name="initialRows" min="1" max="10" value="3">
+    <label for="initialCols">Number of Columns:</label>
+    <input type="number" id="initialCols" name="initialCols" min="1" max="30" value="10">
+    <button onclick="generateInitialTable()">Create Initial Table</button><br><br>
+
+    <div id="initialTableContainer"></div>
+
+    <h3>Random Secondary Tables Generator</h3>
+    <label for="randomRows">Random Table Rows:</label>
+    <input type="number" id="randomRows" name="randomRows" min="1" value="3">
+    <label for="randomCols">Random Table Columns:</label>
+    <input type="number" id="randomCols" name="randomCols" min="1" value="3">
+    <label for="numTables">Number of Random Tables:</label>
+    <input type="number" id="numTables" name="numTables" min="1" value="5">
+    <button onclick="generateRandomTables()">Generate Random Tables</button>
+    <button onclick="downloadPDF()">Download PDF</button>
+    <button onclick="downloadDoc()">Download DOC</button>
+
+    <h3>Randomly Generated Tables</h3>
+    <div id="randomTablesContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.0.1/docx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        let initialTable = [];
+        let excludedRows = new Set();
+        let excludedCols = new Set();
+        let randomTablesData = [];
+
+        // Function to generate the initial table with input fields and checkboxes for row/column removal
+        function generateInitialTable() {
+            const numRows = document.getElementById('initialRows').value;
+            const numCols = document.getElementById('initialCols').value;
+            initialTable = [];
+
+            let tableContainer = document.getElementById('initialTableContainer');
+            tableContainer.innerHTML = ''; // Clear previous table
+
+            let table = document.createElement('table');
+
+            // Generate the column checkboxes row
+            let colCheckboxRow = document.createElement('tr');
+            colCheckboxRow.appendChild(document.createElement('td')); // Empty cell at the start for row checkboxes
+            for (let j = 0; j < numCols; j++) {
+                let colCheckboxCell = document.createElement('td');
+                let colCheckbox = document.createElement('input');
+                colCheckbox.type = 'checkbox';
+                colCheckbox.id = `removeCol${j}`;
+                colCheckboxCell.appendChild(colCheckbox);
+                colCheckboxRow.appendChild(colCheckboxCell);
+            }
+            table.appendChild(colCheckboxRow);
+
+            // Generate the table with input fields and row checkboxes
+            for (let i = 0; i < numRows; i++) {
+                let row = [];
+                let tableRow = document.createElement('tr');
+
+                // Row checkbox for removal
+                let rowCheckboxCell = document.createElement('td');
+                let rowCheckbox = document.createElement('input');
+                rowCheckbox.type = 'checkbox';
+                rowCheckbox.id = `removeRow${i}`;
+                rowCheckboxCell.appendChild(rowCheckbox);
+                tableRow.appendChild(rowCheckboxCell);
+
+                for (let j = 0; j < numCols; j++) {
+                    let cell = document.createElement('td');
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `R${i}C${j}`; // Unique ID for each cell
+                    input.placeholder = `R${i+1}C${j+1}`;
+                    row.push(input.id);
+                    cell.appendChild(input);
+                    tableRow.appendChild(cell);
+                }
+                initialTable.push(row);
+                table.appendChild(tableRow);
+            }
+            tableContainer.appendChild(table);
+        }
+
+        // Function to get the values from the initial table, skipping removed rows/columns
+        function getInitialTableValues() {
+            let tableValues = [];
+            for (let i = 0; i < initialTable.length; i++) {
+                if (document.getElementById(`removeRow${i}`).checked) {
+                    excludedRows.add(i);
+                    continue;
+                }
+                let rowValues = [];
+                for (let j = 0; j < initialTable[i].length; j++) {
+                    if (document.getElementById(`removeCol${j}`).checked) {
+                        excludedCols.add(j);
+                        continue;
+                    }
+                    let cellValue = document.getElementById(initialTable[i][j]).value || initialTable[i][j];
+                    rowValues.push(cellValue);
+                }
+                tableValues.push(rowValues);
+            }
+            return tableValues;
+        }
+
+        // Function to generate random tables based on user input, excluding removed rows/columns
+        function generateRandomTables() {
+            const randomRows = parseInt(document.getElementById('randomRows').value);
+            const randomCols = parseInt(document.getElementById('randomCols').value);
+            const numTables = parseInt(document.getElementById('numTables').value);
+            const initialTableValues = getInitialTableValues();
+            const totalRows = initialTable.length;
+            const totalCols = initialTable[0].length;
+
+            let randomTablesContainer = document.getElementById('randomTablesContainer');
+            randomTablesContainer.innerHTML = ''; // Clear previous tables
+            randomTablesData = []; // Reset random tables data
+
+            for (let i = 0; i < numTables; i++) {
+                let selectedRows = getRandomSelection(totalRows, randomRows, excludedRows);
+                let selectedCols = getRandomSelection(totalCols, randomCols, excludedCols);
+
+                let randomTable = [];
+                for (let row of selectedRows) {
+                    let tableRow = [];
+                    for (let col of selectedCols) {
+                        tableRow.push(initialTableValues[row][col]);
+                    }
+                    randomTable.push(tableRow);
+                }
+                randomTablesData.push(randomTable); // Store the table data
+                displayTable(randomTable, randomTablesContainer);
+            }
+        }
+
+        // Helper function to generate unique random indices, excluding certain rows/columns
+        function getRandomSelection(total, count, excludedSet) {
+            let selected = [];
+            while (selected.length < count) {
+                let randomIndex = Math.floor(Math.random() * total);
+                if (!selected.includes(randomIndex) && !excludedSet.has(randomIndex)) {
+                    selected.push(randomIndex);
+                }
+            }
+            return selected;
+        }
+
+        // Helper function to display the generated tables
+        function displayTable(tableData, container) {
+            let table = document.createElement('table');
+            for (let row of tableData) {
+                let tableRow = document.createElement('tr');
+                for (let cell of row) {
+                    let td = document.createElement('td');
+                    td.innerHTML = cell;
+                    tableRow.appendChild(td);
+                }
+                table.appendChild(tableRow);
+            }
+            container.appendChild(table);
+        }
+
+        // Function to download the random tables as a PDF file with tables filling the page
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let currentY = 10; // Start Y position
+
+            randomTablesData.forEach((table, index) => {
+                // Add a title for each random table
+                doc.text(`Random Table ${index + 1}`, 10, currentY);
+
+                // Use autoTable to add the table in a tabular format
+                doc.autoTable({
+                    startY: currentY + 10,  // Position below the title
+                    body: table  // Pass the table data
+                });
+
+                currentY = doc.lastAutoTable.finalY + 20;  // Adjust Y position based on table height
+
+                if (currentY >= 280) {  // If the Y position exceeds the page height
+                    doc.addPage();  // Add a new page
+                    currentY = 10;  // Reset Y position
+                }
+            });
+
+            doc.save('random_tables.pdf');
+        }
+
+        // Function to download the random tables as a DOC file
+        function downloadDoc() {
+            const doc = new docx.Document({
+                sections: [
+                    {
+                        properties: {},
+                        children: randomTablesData.map((table, index) => {
+                            return new docx.Paragraph({
+                                text: `Random Table ${index + 1}`,
+                                heading: docx.HeadingLevel.HEADING_1
+                            }).concat(
+                                new docx.Table({
+                                    rows: table.map(row => new docx.TableRow({
+                                        children: row.map(cell => new docx.TableCell({
+                                            children: [new docx.Paragraph(cell)]
+                                        }))
+                                    }))
+                                })
+                            );
+                        })
+                    }
+                ]
+            });
+
+            docx.Packer.toBlob(doc).then(blob => {
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "random_tables.docx";
+                link.click();
+            });
+        }
+
     </script>
 
 </body>
