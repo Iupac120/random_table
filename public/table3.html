@@ -505,47 +505,93 @@
         }
 
         // Function to save secondary tables to a server
-        function saveSecondaryTables() {
-            const secondaryTables = randomTablesData;
+        // function saveSecondaryTables() {
+        //     const secondaryTables = randomTablesData;
 
-            fetch('/saveSecondaryTables', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ secondaryTables }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Tables saved successfully', data);
-                alert('Secondary tables saved successfully!');
-            })
-            .catch((error) => {
-                console.error('Error saving tables:', error);
-                alert('Error saving secondary tables.');
-            });
-        }
+        //     fetch('/saveSecondaryTables', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({ secondaryTables }),
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Tables saved successfully', data);
+        //         alert('Secondary tables saved successfully!');
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error saving tables:', error);
+        //         alert('Error saving secondary tables.');
+        //     });
+        // }
 
-        // Function to retrieve secondary tables from the server
-        function retrieveSecondaryTables() {
-            fetch('/retrieveSecondaryTables')
-            .then(response => response.json())
-            .then(data => {
-                const retrievedTables = data.secondaryTables;
-                let randomTablesContainer = document.getElementById('randomTablesContainer');
-                randomTablesContainer.innerHTML = ''; // Clear previous tables
+        // // Function to retrieve secondary tables from the server
+        // function retrieveSecondaryTables() {
+        //     fetch('/retrieveSecondaryTables')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         const retrievedTables = data.secondaryTables;
+        //         let randomTablesContainer = document.getElementById('randomTablesContainer');
+        //         randomTablesContainer.innerHTML = ''; // Clear previous tables
 
-                retrievedTables.forEach(table => {
-                    displayTable(table, randomTablesContainer);
-                });
+        //         retrievedTables.forEach(table => {
+        //             displayTable(table, randomTablesContainer);
+        //         });
 
-                alert('Secondary tables retrieved successfully!');
-            })
-            .catch((error) => {
-                console.error('Error retrieving tables:', error);
-                alert('Error retrieving secondary tables.');
-            });
-        }
+        //         alert('Secondary tables retrieved successfully!');
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error retrieving tables:', error);
+        //         alert('Error retrieving secondary tables.');
+        //     });
+        // }
+        // Function to save secondary tables
+function saveSecondaryTables() {
+    const primaryTableId = "123"; // Replace this with the actual primaryTableId from your application
+    const secondaryTables = randomTablesData;
+
+    fetch('/save-secondary-tables', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ primaryTableId, secondaryTables }) // Send the primaryTableId along with secondary tables
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Tables saved successfully', data);
+        alert('Secondary tables saved successfully!');
+    })
+    .catch((error) => {
+        console.error('Error saving tables:', error);
+        alert('Error saving secondary tables.');
+    });
+}
+
+// Function to retrieve secondary tables from the server
+function retrieveSecondaryTables() {
+    const primaryTableId = "123"; // Replace this with the actual primaryTableId
+
+    fetch(`/retrieve-secondary-tables/${primaryTableId}`) // Pass primaryTableId in the request URL
+    .then(response => response.json())
+    .then(data => {
+        const retrievedTables = data.secondaryTables;
+        let randomTablesContainer = document.getElementById('randomTablesContainer');
+        randomTablesContainer.innerHTML = ''; // Clear previous tables
+
+        retrievedTables.forEach(table => {
+            displayTable(table, randomTablesContainer); // Assuming you have a displayTable function to render tables
+        });
+
+        alert('Secondary tables retrieved successfully!');
+    })
+    .catch((error) => {
+        console.error('Error retrieving tables:', error);
+        alert('Error retrieving secondary tables.');
+    });
+}
+
 
     </script>
 </body>
