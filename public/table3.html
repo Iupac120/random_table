@@ -258,42 +258,36 @@
 
         
         // Function to save secondary tables
-        function saveSecondaryTables() {
-    const secondaryTables = randomTablesData;
-    const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value); // Assuming you have an input for primaryTableId
-    
-    console.log('Primary Table ID:', primaryTableId);
-    console.log('Secondary Tables:', secondaryTables);
+        fetch('/save-secondary-tables', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ primaryTableId, secondaryTables }),
+})
+.then(response => {
+    console.log('Raw Response:', response);  // Log the entire response object
 
-    fetch('/save-secondary-tables', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ primaryTableId, secondaryTables }),
-    })
-    .then(response => {
-        console.log('Raw Response:', response);  // Log the entire response object
-        //return response.json();
-        if (!response.ok) {
+    if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-    // Only parse if content length is greater than 0
-    if (response.headers.get('Content-Length') > 0) {
+
+    // Only parse JSON if there's a body
+    const contentLength = response.headers.get('Content-Length');
+    if (contentLength && parseInt(contentLength) > 0) {
         return response.json();
     } else {
-        return {}; // Return empty object if no content
+        return {};  // Return an empty object if there's no content
     }
-    })
-    .then(data => {
-        console.log('Parsed JSON Data:', data);  // Log the parsed JSON data from the server
-        alert('Secondary tables saved successfully!');
-    })
-    .catch((error) => {
-        console.error('Error saving tables:', error);  // Log any errors encountered
-        alert('Error saving secondary tables.');
-    });
-}
+})
+.then(data => {
+    console.log('Parsed JSON Data:', data);  // Log the parsed JSON data from the server
+    alert('Secondary tables saved successfully!');
+})
+.catch((error) => {
+    console.error('Error saving tables:', error);
+    alert('Error saving secondary tables.');
+});
 
 // Function to retrieve secondary tables from the server
 function retrieveSecondaryTables() {
