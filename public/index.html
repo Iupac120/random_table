@@ -305,7 +305,7 @@ fetch('/save-secondary-tables', {
     if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    return response.json(); // Assuming the response is already JSON
+    response.json(); // Assuming the response is already JSON
 })
 .then(data => {
     console.log('Received Data:', data); // Logs the received data
