@@ -274,13 +274,10 @@
 })
 .then(response => {
     console.log('Raw Response:', response);  // Log the entire response object
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }else{
-        return response.json()
-    }
-
+    return response.json()
+    // if (!response.ok) {
+    //     throw new Error(`HTTP error! status: ${response.status}`);
+    // }
     // Only parse JSON if there's a body
     // const contentLength = response.headers.get('Content-Length');
     // if (contentLength && parseInt(contentLength) > 0) {
