@@ -274,7 +274,16 @@
     })
     .then(response => {
         console.log('Raw Response:', response);  // Log the entire response object
-        return response.json();  // Parse the JSON only after logging the response
+        //return response.json();
+        if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    // Only parse if content length is greater than 0
+    if (response.headers.get('Content-Length') > 0) {
+        return response.json();
+    } else {
+        return {}; // Return empty object if no content
+    }
     })
     .then(data => {
         console.log('Parsed JSON Data:', data);  // Log the parsed JSON data from the server
