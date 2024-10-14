@@ -258,7 +258,14 @@
 
         
         // Function to save secondary tables
-        fetch('/save-secondary-tables', {
+    function saveSecondaryTables() {
+    const secondaryTables = randomTablesData;
+    const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value); // Assuming you have an input for primaryTableId
+    
+    console.log('Primary Table ID:', primaryTableId);
+    console.log('Secondary Tables:', secondaryTables);
+
+    fetch('/save-secondary-tables', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -288,6 +295,8 @@
     console.error('Error saving tables:', error);
     alert('Error saving secondary tables.');
 });
+
+}
 
 // Function to retrieve secondary tables from the server
 function retrieveSecondaryTables() {
