@@ -277,15 +277,17 @@
 
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
+    }else{
+        return response.json()
     }
 
     // Only parse JSON if there's a body
-    const contentLength = response.headers.get('Content-Length');
-    if (contentLength && parseInt(contentLength) > 0) {
-        return response.json();
-    } else {
-        return {};  // Return an empty object if there's no content
-    }
+    // const contentLength = response.headers.get('Content-Length');
+    // if (contentLength && parseInt(contentLength) > 0) {
+    //     return response.json();
+    // } else {
+    //     return {};  // Return an empty object if there's no content
+    // }
 })
 .then(data => {
     console.log('Parsed JSON Data:', data);  // Log the parsed JSON data from the server
