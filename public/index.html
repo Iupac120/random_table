@@ -266,7 +266,7 @@
     console.log('Secondary Tables:', secondaryTables),typeof("type",secondaryTables);
 
     try {
-        const response = await fetch('/save-secondary-tables', {
+        const response = await fetch('https://random-backend-pzys.onrender.com/save-secondary-tables', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -301,7 +301,7 @@
 function retrieveSecondaryTables() {
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
-    fetch(`/retrieve-secondary-tables/${primaryTableId}`)
+    fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
     .then(response => response.json())
     .then(data => {
         const retrievedTables = data.secondaryTables;
