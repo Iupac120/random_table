@@ -262,8 +262,8 @@
     const secondaryTables = randomTablesData;
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value); // Assuming you have an input for primaryTableId
     
-    console.log('Primary Table ID:', primaryTableId);
-    console.log('Secondary Tables:', secondaryTables);
+    console.log('Primary Table ID:', primaryTableId, typeof("type",primaryTableId));
+    console.log('Secondary Tables:', secondaryTables),typeof("type",secondaryTables);
 
     try {
         const response = await fetch('/save-secondary-tables', {
