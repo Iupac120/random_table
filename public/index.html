@@ -264,51 +264,37 @@
     
     console.log('Primary Table ID:', primaryTableId);
     console.log('Secondary Tables:', secondaryTables);
+
+    try {
+        const response = await fetch('/save-secondary-tables', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ primaryTableId, secondaryTables }),
+        });
+
+        console.log('Raw Response:', response);
+
+        // If response is not okay, throw an error
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Parse the response JSON if there is a body
+        const contentLength = response.headers.get('Content-Length');
+        let data = {};
+        if (contentLength && parseInt(contentLength) > 0) {
+            data = await response.json();
+        }
         
-    fetch('/save-secondary-tables', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ primaryTableId, secondaryTables }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Tables saved:', data);
-    })
-    .catch((error) => {
+        console.log('Parsed JSON Data:', data);  // Log the parsed JSON data from the server
+        alert('Secondary tables saved successfully!');
+
+    } catch (error) {
         console.error('Error saving tables:', error);
-    });
-    //try {
-    //     const response = await fetch('/save-secondary-tables', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify({ primaryTableId, secondaryTables }),
-    //     });
-
-    //     console.log('Raw Response:', response);
-
-    //     // If response is not okay, throw an error
-    //     if (!response.ok) {
-    //         throw new Error(`HTTP error! Status: ${response.status}`);
-    //     }
-
-    //     // Parse the response JSON if there is a body
-    //     const contentLength = response.headers.get('Content-Length');
-    //     let data = {};
-    //     if (contentLength && parseInt(contentLength) > 0) {
-    //         data = await response.json();
-    //     }
-        
-    //     console.log('Parsed JSON Data:', data);  // Log the parsed JSON data from the server
-    //     alert('Secondary tables saved successfully!');
-
-    // } catch (error) {
-    //     console.error('Error saving tables:', error);
-    //     alert('Error saving secondary tables.');
-    // }
+        alert('Error saving secondary tables.');
+    }
 }
 
 // Function to retrieve secondary tables from the server
