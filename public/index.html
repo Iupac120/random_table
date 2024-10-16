@@ -134,47 +134,6 @@
             return tableValues;
         }
 
-        // Function to generate random tables based on user input, excluding removed rows/columns
-        // function generateRandomTables() {
-        //     const randomRows = parseInt(document.getElementById('randomRows').value);
-        //     const randomCols = parseInt(document.getElementById('randomCols').value);
-        //     const numTables = parseInt(document.getElementById('numTables').value);
-        //     const initialTableValues = getInitialTableValues();
-        //     const totalRows = initialTable.length;
-        //     const totalCols = initialTable[0].length;
-
-        //     let randomTablesContainer = document.getElementById('randomTablesContainer');
-        //     randomTablesContainer.innerHTML = ''; // Clear previous tables
-        //     randomTablesData = []; // Reset random tables data
-
-        //     for (let i = 0; i < numTables; i++) {
-        //         let selectedRows = getRandomSelection(totalRows, randomRows, excludedRows);
-        //         let selectedCols = getRandomSelection(totalCols, randomCols, excludedCols);
-
-        //         let randomTable = [];
-        //         for (let row of selectedRows) {
-        //             let tableRow = [];
-        //             for (let col of selectedCols) {
-        //                 tableRow.push(initialTableValues[row][col]);
-        //             }
-        //             randomTable.push(tableRow);
-        //         }
-        //         randomTablesData.push(randomTable); // Store the table data
-        //         displayTable(randomTable, randomTablesContainer);
-        //     }
-        // }
-
-        // // Helper function to generate unique random indices, excluding certain rows/columns
-        // function getRandomSelection(total, count, excludedSet) {
-        //     let selected = [];
-        //     while (selected.length < count) {
-        //         let randomIndex = Math.floor(Math.random() * total);
-        //         if (!selected.includes(randomIndex) && !excludedSet.has(randomIndex)) {
-        //             selected.push(randomIndex);
-        //         }
-        //     }
-        //     return selected;
-        // }
         // Function to generate random tables with random rows but the same columns
 function generateRandomTables() {
     const randomRows = parseInt(document.getElementById('randomRows').value);
@@ -456,33 +415,60 @@ function displayTableName(tableName, container) {
     container.appendChild(tableNameElement);
 }
 
-//remove from the table
-// Assuming your table has column checkboxes with a specific class name
-document.querySelectorAll('.column-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        const column = this.getAttribute('data-column');  // Column name or index
-        const table = document.querySelector('#secondaryTable');
-        
-        // If checkbox is checked, remove the column
-        if (this.checked) {
-            // Remove the column from the table
-            removeColumnFromTable(table, column);
-        }
-    });
-});
 
-function removeColumnFromTable(table, column) {
-    const rows = table.querySelectorAll('tr');
-    
-    // Loop through each row and remove the corresponding column cell
-    rows.forEach(row => {
-        const cell = row.querySelector(`[data-column='${column}']`);
-        if (cell) {
-            cell.remove();
-        }
-    });
-}
+//remove from the secondary table
+// Function to highlight corresponding data in the secondary tables and remove columns
+function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
+        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
+            const tableId = `secondaryTable-${secondaryIndex}`;
+            const secondaryTableElement = document.getElementById(tableId);
 
+            if (secondaryTableElement) {
+                // Highlight the cell in the secondary table
+                const secondaryRow = secondaryTable[rowIndex];
+                if (secondaryRow) {
+                    const secondaryCell = secondaryRow[colIndex];
+                    if (secondaryCell) {
+                        const cellElement = secondaryTableElement.rows[rowIndex].cells[colIndex];
+                        if (isChecked) {
+                            cellElement.style.backgroundColor = 'yellow';  // Highlight if checked
+                        } else {
+                            cellElement.style.backgroundColor = '';  // Reset background if unchecked
+                        }
+                    }
+                }
+            }
+        });
+
+        // Call function to update displayed secondary tables based on checkboxes
+        updateDisplayedSecondaryTables(secondaryTables);
+    }
+
+    // Function to update displayed secondary tables based on checked columns
+    function updateDisplayedSecondaryTables(secondaryTables) {
+        const primaryTable = document.querySelector('.primary-table');
+        const columnChecks = primaryTable.querySelectorAll('input[type="checkbox"]');
+
+        // Iterate through each secondary table
+        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
+            const tableId = `secondaryTable-${secondaryIndex}`;
+            const secondaryTableElement = document.getElementById(tableId);
+
+            if (secondaryTableElement) {
+                const rows = secondaryTableElement.rows;
+                
+                // Iterate through each column in the primary table to see if it should be removed
+                for (let colIndex = 0; colIndex < columnChecks.length; colIndex++) {
+                    if (columnChecks[colIndex].checked) {
+                        // Remove the column from the secondary table
+                        for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                            rows[rowIndex].deleteCell(colIndex);  // Remove the cell from the current row
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     </script>
 </body>
