@@ -313,11 +313,11 @@ function retrieveSecondaryTables() {
     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
     .then(response => response.json())
     .then(data => {
-        const primaryTableArray = data.random.primary
+        const primaryTableArray = data.primary
         console.log("dataSec",data.secondary)
         console.log("data",data)
         console.log("primary",primaryTableArray)
-        const retrievedTables = data.random.secondary;
+        const retrievedTables = data.secondary;
         console.log("primary",retrievedTables)
         let randomTablesContainer = document.getElementById('randomTablesContainer');
         randomTablesContainer.innerHTML = ''; // Clear previous tables
