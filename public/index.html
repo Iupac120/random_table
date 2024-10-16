@@ -280,7 +280,14 @@
 
         // If response is not okay, throw an error
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            //throw new Error(`HTTP error! Status: ${response.status}`);
+            const errorData = await response.json();
+            if (response.status === 401 && errorData.message) {
+                alert(`Error: ${errorData.message}`); // Show the error message in an alert
+            } else {
+                alert('Error saving secondary tables.');
+            }
+            return;
         }
 
         // Parse the response JSON if there is a body
