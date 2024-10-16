@@ -313,10 +313,18 @@ function retrieveSecondaryTables() {
     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
     .then(response => response.json())
     .then(data => {
+        const primaryTableArray = data.primaryTable
         const retrievedTables = data.secondaryTables;
+
         let randomTablesContainer = document.getElementById('randomTablesContainer');
         randomTablesContainer.innerHTML = ''; // Clear previous tables
 
+        if (primaryTableArray.length > 0) {
+            const primaryTable = primaryTableArray[0]; // Extract the first (and only) table from the array
+            displayTable(primaryTable, randomTablesContainer); // Display the primary table
+        }
+
+    
         retrievedTables.forEach(table => {
             displayTable(table, randomTablesContainer);
         });
