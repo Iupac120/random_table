@@ -332,23 +332,25 @@ function retrieveSecondaryTables() {
         // } else {
         //     console.warn('No secondary tables found.');
         // }
-
-        // alert('Tables retrieved successfully!');
         const primaryTable = data.primary;  // Get the primary table directly
         const retrievedTables = data.secondary;  // Get the secondary tables
 
         let randomTablesContainer = document.getElementById('randomTablesContainer');
         randomTablesContainer.innerHTML = ''; // Clear previous tables
 
-        // Display the primary table and add click events
+        // Display the primary table with name
         if (primaryTable && primaryTable.length > 0) {
-            displayTableWithClick(primaryTable, retrievedTables, randomTablesContainer); // Display the primary table with click functionality
+            const primaryTableName = `Primary Table (ID: ${primaryTableId})`;
+            displayTableName(primaryTableName, randomTablesContainer); // Display primary table name
+            displayPrimaryTableWithCheckboxes(primaryTable, randomTablesContainer, retrievedTables); // Display the primary table with checkboxes
         }
 
-        // Display each secondary table
+        // Display each secondary table with name
         if (Array.isArray(retrievedTables)) {
             retrievedTables.forEach((table, index) => {
-                displaySecondaryTable(table, `secondaryTable-${index}`, randomTablesContainer); // Display each secondary table
+                const secondaryTableName = `Secondary Table ${index + 1}`;
+                displayTableName(secondaryTableName, randomTablesContainer); // Display secondary table name
+                displayTable(table, randomTablesContainer, `secondaryTable-${index}`); // Display each secondary table
             });
         } else {
             console.warn('No secondary tables found.');
@@ -362,21 +364,26 @@ function retrieveSecondaryTables() {
     });
 }
 
-//primary tablw with click function
-function displayTableWithClick(table, secondaryTables, container) {
+
+// Function to display the primary table with checkboxes
+function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
     const tableElement = document.createElement('table');
+    tableElement.classList.add('primary-table');
 
     table.forEach((row, rowIndex) => {
         const rowElement = document.createElement('tr');
         row.forEach((cell, colIndex) => {
             const cellElement = document.createElement('td');
-            cellElement.textContent = cell;
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
 
-            // Add click event to highlight the matching data in the secondary tables
-            cellElement.addEventListener('click', () => {
-                highlightMatchingData(cell, secondaryTables);
+            // Attach event listener for checkbox click
+            checkbox.addEventListener('click', () => {
+                highlightCorrespondingData(rowIndex, colIndex, secondaryTables, checkbox.checked);
             });
 
+            cellElement.innerText = cell;
+            cellElement.prepend(checkbox); // Add checkbox before the cell content
             rowElement.appendChild(cellElement);
         });
         tableElement.appendChild(rowElement);
@@ -385,22 +392,52 @@ function displayTableWithClick(table, secondaryTables, container) {
     container.appendChild(tableElement);
 }
 
-//secondary with click color
-function displaySecondaryTable(table, tableId, container) {
+// Function to highlight corresponding data in the secondary tables
+function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
+    secondaryTables.forEach((secondaryTable, secondaryIndex) => {
+        const tableId = `secondaryTable-${secondaryIndex}`;
+        const secondaryTableElement = document.getElementById(tableId);
+
+        if (secondaryTableElement) {
+            const secondaryRow = secondaryTable[rowIndex];
+            if (secondaryRow) {
+                const secondaryCell = secondaryRow[colIndex];
+                if (secondaryCell) {
+                    const cellElement = secondaryTableElement.rows[rowIndex].cells[colIndex];
+                    if (isChecked) {
+                        cellElement.style.backgroundColor = 'yellow';  // Highlight if checked
+                    } else {
+                        cellElement.style.backgroundColor = '';  // Reset background if unchecked
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Function to display a secondary table
+function displayTable(table, container, tableId) {
     const tableElement = document.createElement('table');
-    tableElement.id = tableId;
+    tableElement.id = tableId;  // Set unique ID for each secondary table
 
     table.forEach(row => {
         const rowElement = document.createElement('tr');
         row.forEach(cell => {
             const cellElement = document.createElement('td');
-            cellElement.textContent = cell;
+            cellElement.innerText = cell;
             rowElement.appendChild(cellElement);
         });
         tableElement.appendChild(rowElement);
     });
 
     container.appendChild(tableElement);
+}
+
+// Function to display table names
+function displayTableName(tableName, container) {
+    const tableNameElement = document.createElement('h3');
+    tableNameElement.innerText = tableName;
+    container.appendChild(tableNameElement);
 }
 
 
