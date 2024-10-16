@@ -310,7 +310,7 @@
 function retrieveSecondaryTables() {
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
-    fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/:${primaryTableId}`)
+    fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
     .then(response => response.json())
     .then(data => {
         const retrievedTables = data.secondaryTables;
