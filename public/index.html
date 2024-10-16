@@ -417,58 +417,6 @@ function displayTableName(tableName, container) {
 
 
 //remove from the secondary table
-// Function to highlight corresponding data in the secondary tables and remove columns
-function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
-        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-            const tableId = `secondaryTable-${secondaryIndex}`;
-            const secondaryTableElement = document.getElementById(tableId);
-
-            if (secondaryTableElement) {
-                // Highlight the cell in the secondary table
-                const secondaryRow = secondaryTable[rowIndex];
-                if (secondaryRow) {
-                    const secondaryCell = secondaryRow[colIndex];
-                    if (secondaryCell) {
-                        const cellElement = secondaryTableElement.rows[rowIndex].cells[colIndex];
-                        if (isChecked) {
-                            cellElement.style.backgroundColor = 'yellow';  // Highlight if checked
-                        } else {
-                            cellElement.style.backgroundColor = '';  // Reset background if unchecked
-                        }
-                    }
-                }
-            }
-        });
-
-        // Call function to update displayed secondary tables based on checkboxes
-        updateDisplayedSecondaryTables(secondaryTables);
-    }
-
-    // Function to update displayed secondary tables based on checked columns
-    function updateDisplayedSecondaryTables(secondaryTables) {
-        const primaryTable = document.querySelector('.primary-table');
-        const columnChecks = primaryTable.querySelectorAll('input[type="checkbox"]');
-
-        // Iterate through each secondary table
-        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-            const tableId = `secondaryTable-${secondaryIndex}`;
-            const secondaryTableElement = document.getElementById(tableId);
-
-            if (secondaryTableElement) {
-                const rows = secondaryTableElement.rows;
-                
-                // Iterate through each column in the primary table to see if it should be removed
-                for (let colIndex = 0; colIndex < columnChecks.length; colIndex++) {
-                    if (columnChecks[colIndex].checked) {
-                        // Remove the column from the secondary table
-                        for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-                            rows[rowIndex].deleteCell(colIndex);  // Remove the cell from the current row
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     </script>
 </body>
