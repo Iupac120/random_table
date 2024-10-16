@@ -314,8 +314,9 @@ function retrieveSecondaryTables() {
     .then(response => response.json())
     .then(data => {
         const primaryTableArray = data.primaryTable
+        console.log("primary",primaryTableArray)
         const retrievedTables = data.secondaryTables;
-
+        console.log("primary",primaryTableArray)
         let randomTablesContainer = document.getElementById('randomTablesContainer');
         randomTablesContainer.innerHTML = ''; // Clear previous tables
 
