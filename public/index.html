@@ -314,7 +314,8 @@ function retrieveSecondaryTables() {
     .then(response => response.json())
     .then(data => {
         const primaryTableArray = data.primaryTable
-        console.log("data",data)
+        console.log("data",data.secondaryTables.table)
+        console.log("data",data.secondaryTables.tables)
         console.log("primary",primaryTableArray)
         const retrievedTables = data.secondaryTables;
         console.log("primary",retrievedTables)
