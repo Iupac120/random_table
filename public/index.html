@@ -313,26 +313,27 @@ function retrieveSecondaryTables() {
     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
     .then(response => response.json())
     .then(data => {
-        const primaryTableArray = data.primary
-        console.log("dataSec",data.secondary)
-        console.log("data",data)
-        console.log("primary",primaryTableArray)
-        const retrievedTables = data.secondary;
-        console.log("primary",retrievedTables)
+        const primaryTable = data.primary;  // Get the primary table directly
+        const retrievedTables = data.secondary;  // Get the secondary tables
+
         let randomTablesContainer = document.getElementById('randomTablesContainer');
         randomTablesContainer.innerHTML = ''; // Clear previous tables
 
-        if (primaryTableArray.length > 0) {
-            const primaryTable = primaryTableArray[0]; // Extract the first (and only) table from the array
-            displayTable(primaryTable, randomTablesContainer); // Display the primary table
+        // Display the primary table (if exists)
+        if (primaryTable && primaryTable.length > 0) {
+            displayTable(primaryTable, randomTablesContainer); // Display the full primary table
         }
 
-    
-        retrievedTables.forEach(table => {
-            displayTable(table, randomTablesContainer);
-        });
+        // Display each secondary table
+        if (Array.isArray(retrievedTables)) {
+            retrievedTables.forEach(table => {
+                displayTable(table, randomTablesContainer); // Display each secondary table
+            });
+        } else {
+            console.warn('No secondary tables found.');
+        }
 
-        alert('Secondary tables retrieved successfully!');
+        alert('Tables retrieved successfully!');
     })
     .catch((error) => {
         console.error('Error retrieving tables:', error);
