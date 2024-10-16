@@ -313,21 +313,42 @@ function retrieveSecondaryTables() {
     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
     .then(response => response.json())
     .then(data => {
+        // const primaryTable = data.primary;  // Get the primary table directly
+        // const retrievedTables = data.secondary;  // Get the secondary tables
+
+        // let randomTablesContainer = document.getElementById('randomTablesContainer');
+        // randomTablesContainer.innerHTML = ''; // Clear previous tables
+
+        // // Display the primary table (if exists)
+        // if (primaryTable && primaryTable.length > 0) {
+        //     displayTable(primaryTable, randomTablesContainer); // Display the full primary table
+        // }
+
+        // // Display each secondary table
+        // if (Array.isArray(retrievedTables)) {
+        //     retrievedTables.forEach(table => {
+        //         displayTable(table, randomTablesContainer); // Display each secondary table
+        //     });
+        // } else {
+        //     console.warn('No secondary tables found.');
+        // }
+
+        // alert('Tables retrieved successfully!');
         const primaryTable = data.primary;  // Get the primary table directly
         const retrievedTables = data.secondary;  // Get the secondary tables
 
         let randomTablesContainer = document.getElementById('randomTablesContainer');
         randomTablesContainer.innerHTML = ''; // Clear previous tables
 
-        // Display the primary table (if exists)
+        // Display the primary table and add click events
         if (primaryTable && primaryTable.length > 0) {
-            displayTable(primaryTable, randomTablesContainer); // Display the full primary table
+            displayTableWithClick(primaryTable, retrievedTables, randomTablesContainer); // Display the primary table with click functionality
         }
 
         // Display each secondary table
         if (Array.isArray(retrievedTables)) {
-            retrievedTables.forEach(table => {
-                displayTable(table, randomTablesContainer); // Display each secondary table
+            retrievedTables.forEach((table, index) => {
+                displaySecondaryTable(table, `secondaryTable-${index}`, randomTablesContainer); // Display each secondary table
             });
         } else {
             console.warn('No secondary tables found.');
@@ -339,6 +360,47 @@ function retrieveSecondaryTables() {
         console.error('Error retrieving tables:', error);
         alert('Error retrieving secondary tables.');
     });
+}
+
+//primary tablw with click function
+function displayTableWithClick(table, secondaryTables, container) {
+    const tableElement = document.createElement('table');
+
+    table.forEach((row, rowIndex) => {
+        const rowElement = document.createElement('tr');
+        row.forEach((cell, colIndex) => {
+            const cellElement = document.createElement('td');
+            cellElement.textContent = cell;
+
+            // Add click event to highlight the matching data in the secondary tables
+            cellElement.addEventListener('click', () => {
+                highlightMatchingData(cell, secondaryTables);
+            });
+
+            rowElement.appendChild(cellElement);
+        });
+        tableElement.appendChild(rowElement);
+    });
+
+    container.appendChild(tableElement);
+}
+
+//secondary with click color
+function displaySecondaryTable(table, tableId, container) {
+    const tableElement = document.createElement('table');
+    tableElement.id = tableId;
+
+    table.forEach(row => {
+        const rowElement = document.createElement('tr');
+        row.forEach(cell => {
+            const cellElement = document.createElement('td');
+            cellElement.textContent = cell;
+            rowElement.appendChild(cellElement);
+        });
+        tableElement.appendChild(rowElement);
+    });
+
+    container.appendChild(tableElement);
 }
 
 
