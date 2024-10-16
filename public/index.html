@@ -456,6 +456,33 @@ function displayTableName(tableName, container) {
     container.appendChild(tableNameElement);
 }
 
+//remove from the table
+// Assuming your table has column checkboxes with a specific class name
+document.querySelectorAll('.column-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const column = this.getAttribute('data-column');  // Column name or index
+        const table = document.querySelector('#secondaryTable');
+        
+        // If checkbox is checked, remove the column
+        if (this.checked) {
+            // Remove the column from the table
+            removeColumnFromTable(table, column);
+        }
+    });
+});
+
+function removeColumnFromTable(table, column) {
+    const rows = table.querySelectorAll('tr');
+    
+    // Loop through each row and remove the corresponding column cell
+    rows.forEach(row => {
+        const cell = row.querySelector(`[data-column='${column}']`);
+        if (cell) {
+            cell.remove();
+        }
+    });
+}
+
 
     </script>
 </body>
