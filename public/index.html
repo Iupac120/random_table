@@ -260,6 +260,7 @@
         // Function to save secondary tables
     async function saveSecondaryTables() {
     const secondaryTables = randomTablesData;
+    const primaryTable = tableValues;
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value); // Assuming you have an input for primaryTableId
     
     console.log('Primary Table ID:', primaryTableId, typeof("type",primaryTableId));
@@ -271,7 +272,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ primaryTableId, secondaryTables }),
+            body: JSON.stringify({ primaryTableId,primaryTable, secondaryTables }),
         });
 
         console.log('Raw Response:', response);
