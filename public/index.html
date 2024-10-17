@@ -46,10 +46,7 @@
     <button onclick="saveSecondaryTables()">Save Secondary Tables</button>
     <button onclick="retrieveSecondaryTables()">Retrieve Secondary Tables</button>
     
-    <input type="number" id="primaryTableIdInput" placeholder="Enter Primary Table ID">
-    <button onclick="retrieveSecondaryTables()">Retrieve Tables</button>
-    <div id="randomTablesContainer"></div>
-
+   
 
     <h3>Randomly Generated Tables</h3>
     <div id="randomTablesContainer"></div>
@@ -262,7 +259,7 @@ function getRandomSelection(total, count, excludedSet) {
     const primaryTable = getInitialTableValues();
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value); // Assuming you have an input for primaryTableId
     
-    console.log('Primary Table ID:', primaryTableId, typeof("type",primaryTableId));
+    console.log('Primary Table ID:', primaryTableId, typeof primaryTableId);
     console.log('Primary Table:', primaryTable)
     console.log('Secondary Tables:', secondaryTables),typeof("type",secondaryTables);
 
