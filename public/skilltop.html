@@ -134,47 +134,41 @@
             return tableValues;
         }
 
-        // Function to generate random tables based on user input, excluding removed rows/columns
-        function generateRandomTables() {
-            const randomRows = parseInt(document.getElementById('randomRows').value);
-            const randomCols = parseInt(document.getElementById('randomCols').value);
-            const numTables = parseInt(document.getElementById('numTables').value);
-            const initialTableValues = getInitialTableValues();
-            const totalRows = initialTable.length;
-            const totalCols = initialTable[0].length;
+        // Function to generate random tables with random rows but the same columns
+function generateRandomTables() {
+    const randomRows = parseInt(document.getElementById('randomRows').value);
+    const numTables = parseInt(document.getElementById('numTables').value);
+    const initialTableValues = getInitialTableValues();  // Get the values from the initial table
+    const totalRows = initialTableValues.length;  // Number of rows in the primary table
 
-            let randomTablesContainer = document.getElementById('randomTablesContainer');
-            randomTablesContainer.innerHTML = ''; // Clear previous tables
-            randomTablesData = []; // Reset random tables data
+    let randomTablesContainer = document.getElementById('randomTablesContainer');
+    randomTablesContainer.innerHTML = ''; // Clear previous tables
+    randomTablesData = []; // Reset random tables data
 
-            for (let i = 0; i < numTables; i++) {
-                let selectedRows = getRandomSelection(totalRows, randomRows, excludedRows);
-                let selectedCols = getRandomSelection(totalCols, randomCols, excludedCols);
+    for (let i = 0; i < numTables; i++) {
+        let selectedRows = getRandomSelection(totalRows, randomRows, excludedRows);  // Random rows
 
-                let randomTable = [];
-                for (let row of selectedRows) {
-                    let tableRow = [];
-                    for (let col of selectedCols) {
-                        tableRow.push(initialTableValues[row][col]);
-                    }
-                    randomTable.push(tableRow);
-                }
-                randomTablesData.push(randomTable); // Store the table data
-                displayTable(randomTable, randomTablesContainer);
-            }
+        let randomTable = [];
+        for (let row of selectedRows) {
+            randomTable.push([...initialTableValues[row]]);  // Keep the columns intact
         }
 
-        // Helper function to generate unique random indices, excluding certain rows/columns
-        function getRandomSelection(total, count, excludedSet) {
-            let selected = [];
-            while (selected.length < count) {
-                let randomIndex = Math.floor(Math.random() * total);
-                if (!selected.includes(randomIndex) && !excludedSet.has(randomIndex)) {
-                    selected.push(randomIndex);
-                }
-            }
-            return selected;
+        randomTablesData.push(randomTable);  // Store the table data
+        displayTable(randomTable, randomTablesContainer);  // Display the table
+    }
+}
+
+// Helper function to generate unique random row indices, excluding certain rows
+function getRandomSelection(total, count, excludedSet) {
+    let selected = [];
+    while (selected.length < count) {
+        let randomIndex = Math.floor(Math.random() * total);
+        if (!selected.includes(randomIndex) && !excludedSet.has(randomIndex)) {
+            selected.push(randomIndex);
         }
+    }
+    return selected;
+}
 
         // Helper function to display the generated tables
         function displayTable(tableData, container) {
@@ -421,6 +415,8 @@ function displayTableName(tableName, container) {
     container.appendChild(tableNameElement);
 }
 
+
+//remove from the secondary table
 
     </script>
 </body>

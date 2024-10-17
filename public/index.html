@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -300,232 +300,335 @@ function getRandomSelection(total, count, excludedSet) {
     }
 }
 
-// // Function to retrieve secondary tables from the server
-// function retrieveSecondaryTables() {
-//     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
+// Function to retrieve secondary tables from the server
+function retrieveSecondaryTables() {
+    const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
-//     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
-//     .then(response => response.json())
-//     .then(data => {
-//         const primaryTable = data.primary;  // Get the primary table directly
-//         const retrievedTables = data.secondary;  // Get the secondary tables
+    fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
+    .then(response => response.json())
+    .then(data => {
+        const primaryTable = data.primary;  // Get the primary table directly
+        const retrievedTables = data.secondary;  // Get the secondary tables
 
-//         let randomTablesContainer = document.getElementById('randomTablesContainer');
-//         randomTablesContainer.innerHTML = ''; // Clear previous tables
+        let randomTablesContainer = document.getElementById('randomTablesContainer');
+        randomTablesContainer.innerHTML = ''; // Clear previous tables
 
-//         // Display the primary table with name
-//         if (primaryTable && primaryTable.length > 0) {
-//             const primaryTableName = `Primary Table (ID: ${primaryTableId})`;
-//             displayTableName(primaryTableName, randomTablesContainer); // Display primary table name
-//             displayPrimaryTableWithCheckboxes(primaryTable, randomTablesContainer, retrievedTables); // Display the primary table with checkboxes
-//         }
+        // Display the primary table with name
+        if (primaryTable && primaryTable.length > 0) {
+            const primaryTableName = `Primary Table (ID: ${primaryTableId})`;
+            displayTableName(primaryTableName, randomTablesContainer); // Display primary table name
+            displayPrimaryTableWithCheckboxes(primaryTable, randomTablesContainer, retrievedTables); // Display the primary table with checkboxes
+        }
 
-//         // Display each secondary table with name
-//         if (Array.isArray(retrievedTables)) {
-//             retrievedTables.forEach((table, index) => {
-//                 const secondaryTableName = `Secondary Table ${index + 1}`;
-//                 displayTableName(secondaryTableName, randomTablesContainer); // Display secondary table name
-//                 displayTable(table, randomTablesContainer, `secondaryTable-${index}`); // Display each secondary table
-//             });
-//         } else {
-//             console.warn('No secondary tables found.');
-//         }
+        // Display each secondary table with name
+        if (Array.isArray(retrievedTables)) {
+            retrievedTables.forEach((table, index) => {
+                const secondaryTableName = `Secondary Table ${index + 1}`;
+                displayTableName(secondaryTableName, randomTablesContainer); // Display secondary table name
+                displayTable(table, randomTablesContainer, `secondaryTable-${index}`); // Display each secondary table
+            });
+        } else {
+            console.warn('No secondary tables found.');
+        }
 
-//         alert('Tables retrieved successfully!');
-//     })
-//     .catch((error) => {
-//         console.error('Error retrieving tables:', error);
-//         alert('Error retrieving secondary tables.');
-//     });
-// }
+        alert('Tables retrieved successfully!');
+    })
+    .catch((error) => {
+        console.error('Error retrieving tables:', error);
+        alert('Error retrieving secondary tables.');
+    });
+}
 
 
-// // Function to display the primary table with checkboxes
-// function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
-//     const tableElement = document.createElement('table');
-//     tableElement.classList.add('primary-table');
+// Function to display the primary table with checkboxes
+function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
+    const tableElement = document.createElement('table');
+    tableElement.classList.add('primary-table');
 
-//     table.forEach((row, rowIndex) => {
-//         const rowElement = document.createElement('tr');
-//         row.forEach((cell, colIndex) => {
-//             const cellElement = document.createElement('td');
-//             const checkbox = document.createElement('input');
-//             checkbox.type = 'checkbox';
+    table.forEach((row, rowIndex) => {
+        const rowElement = document.createElement('tr');
+        row.forEach((cell, colIndex) => {
+            const cellElement = document.createElement('td');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
 
-//             // Attach event listener for checkbox click
-//             checkbox.addEventListener('click', () => {
-//                 highlightCorrespondingData(rowIndex, colIndex, secondaryTables, checkbox.checked);
-//             });
+            // Attach event listener for checkbox click
+            checkbox.addEventListener('click', () => {
+                highlightCorrespondingData(rowIndex, colIndex, secondaryTables, checkbox.checked);
+            });
 
-//             cellElement.innerText = cell;
-//             cellElement.prepend(checkbox); // Add checkbox before the cell content
-//             rowElement.appendChild(cellElement);
-//         });
-//         tableElement.appendChild(rowElement);
-//     });
+            cellElement.innerText = cell;
+            cellElement.prepend(checkbox); // Add checkbox before the cell content
+            rowElement.appendChild(cellElement);
+        });
+        tableElement.appendChild(rowElement);
+    });
 
-//     container.appendChild(tableElement);
-// }
+    container.appendChild(tableElement);
+}
 
-// // Function to highlight corresponding data in the secondary tables
-// function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
-//     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-//         const tableId = `secondaryTable-${secondaryIndex}`;
-//         const secondaryTableElement = document.getElementById(tableId);
+// Function to highlight corresponding data in the secondary tables
+function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
+    secondaryTables.forEach((secondaryTable, secondaryIndex) => {
+        const tableId = `secondaryTable-${secondaryIndex}`;
+        const secondaryTableElement = document.getElementById(tableId);
 
-//         if (secondaryTableElement) {
-//             const secondaryRow = secondaryTable[rowIndex];
-//             if (secondaryRow) {
-//                 const secondaryCell = secondaryRow[colIndex];
-//                 if (secondaryCell) {
-//                     const cellElement = secondaryTableElement.rows[rowIndex].cells[colIndex];
-//                     if (isChecked) {
-//                         cellElement.style.backgroundColor = 'yellow';  // Highlight if checked
-//                     } else {
-//                         cellElement.style.backgroundColor = '';  // Reset background if unchecked
-//                     }
-//                 }
-//             }
-//         }
-//     });
-// }
+        if (secondaryTableElement) {
+            const secondaryRow = secondaryTable[rowIndex];
+            if (secondaryRow) {
+                const secondaryCell = secondaryRow[colIndex];
+                if (secondaryCell) {
+                    const cellElement = secondaryTableElement.rows[rowIndex].cells[colIndex];
+                    if (isChecked) {
+                        cellElement.style.backgroundColor = 'yellow';  // Highlight if checked
+                    } else {
+                        cellElement.style.backgroundColor = '';  // Reset background if unchecked
+                    }
+                }
+            }
+        }
+    });
+}
 
-// // Function to display a secondary table
-// function displayTable(table, container, tableId) {
-//     const tableElement = document.createElement('table');
-//     tableElement.id = tableId;  // Set unique ID for each secondary table
+// Function to display a secondary table
+function displayTable(table, container, tableId) {
+    const tableElement = document.createElement('table');
+    tableElement.id = tableId;  // Set unique ID for each secondary table
 
-//     table.forEach(row => {
-//         const rowElement = document.createElement('tr');
-//         row.forEach(cell => {
-//             const cellElement = document.createElement('td');
-//             cellElement.innerText = cell;
-//             rowElement.appendChild(cellElement);
-//         });
-//         tableElement.appendChild(rowElement);
-//     });
+    table.forEach(row => {
+        const rowElement = document.createElement('tr');
+        row.forEach(cell => {
+            const cellElement = document.createElement('td');
+            cellElement.innerText = cell;
+            rowElement.appendChild(cellElement);
+        });
+        tableElement.appendChild(rowElement);
+    });
 
-//     container.appendChild(tableElement);
-// }
+    container.appendChild(tableElement);
+}
 
-// // Function to display table names
-// function displayTableName(tableName, container) {
-//     const tableNameElement = document.createElement('h3');
-//     tableNameElement.innerText = tableName;
-//     container.appendChild(tableNameElement);
-// }
+// Function to display table names
+function displayTableName(tableName, container) {
+    const tableNameElement = document.createElement('h3');
+    tableNameElement.innerText = tableName;
+    container.appendChild(tableNameElement);
+}
 
 
 //remove from the secondary table
-function retrieveSecondaryTables() {
-        const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
-        fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
-        .then(response => response.json())
-        .then(data => {
-            const primaryTable = data.primary;  // Get the primary table directly
-            const retrievedTables = data.secondary;  // Get the secondary tables
+    </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table Generator with Column Checkboxes</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 10px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
 
+    <h2>Random table ID</h2>
+    <label for="primaryTableIdInput">Primary Table ID:</label>
+    <input type="number" id="primaryTableIdInput" name="primaryTableIdInput" min="1" value="1">
+
+
+    <h2>Dynamic Table Generator</h2>
+
+    <label for="initialRows">Number of Rows:</label>
+    <input type="number" id="initialRows" name="initialRows" min="1" max="10" value="3">
+    <label for="initialCols">Number of Columns:</label>
+    <input type="number" id="initialCols" name="initialCols" min="1" max="30" value="10">
+    <button onclick="generateInitialTable()">Create Initial Table</button><br><br>
+
+    <div id="initialTableContainer"></div>
+
+    <h3>Random Secondary Tables Generator</h3>
+    <label for="randomRows">Random Table Rows:</label>
+    <input type="number" id="randomRows" name="randomRows" min="1" value="3">
+    <label for="randomCols">Random Table Columns:</label>
+    <input type="number" id="randomCols" name="randomCols" min="1" value="3">
+    <label for="numTables">Number of Random Tables:</label>
+    <input type="number" id="numTables" name="numTables" min="1" value="5">
+    <button onclick="generateRandomTables()">Generate Random Tables</button>
+    <button onclick="downloadPDF()">Download PDF</button>
+    <button onclick="downloadDoc()">Download DOC</button>
+    <button onclick="saveSecondaryTables()">Save Secondary Tables</button>
+    <button onclick="retrieveSecondaryTables()">Retrieve Secondary Tables</button>
+
+    <h3>Randomly Generated Tables</h3>
+    <div id="randomTablesContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.0.1/docx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        let initialTable = [];
+        let randomTablesData = [];
+
+        // Function to generate the initial table with input fields
+        function generateInitialTable() {
+            const numRows = document.getElementById('initialRows').value;
+            const numCols = document.getElementById('initialCols').value;
+            initialTable = [];
+
+            let tableContainer = document.getElementById('initialTableContainer');
+            tableContainer.innerHTML = ''; // Clear previous table
+
+            let table = document.createElement('table');
+
+            // Generate the column checkboxes row
+            let colCheckboxRow = document.createElement('tr');
+            colCheckboxRow.appendChild(document.createElement('td')); // Empty cell for alignment
+
+            for (let j = 0; j < numCols; j++) {
+                let colCheckboxCell = document.createElement('td');
+                let colCheckbox = document.createElement('input');
+                colCheckbox.type = 'checkbox';
+                colCheckbox.id = `removeCol${j}`;
+
+                // Event listener for each column checkbox
+                colCheckbox.addEventListener('click', () => {
+                    handleColumnCheckboxClick(j);
+                });
+
+                colCheckboxCell.appendChild(colCheckbox);
+                colCheckboxRow.appendChild(colCheckboxCell);
+            }
+            table.appendChild(colCheckboxRow);
+
+            // Generate the table with input fields
+            for (let i = 0; i < numRows; i++) {
+                let row = [];
+                let tableRow = document.createElement('tr');
+
+                for (let j = 0; j < numCols; j++) {
+                    let cell = document.createElement('td');
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `R${i}C${j}`; // Unique ID for each cell
+                    input.placeholder = `R${i+1}C${j+1}`;
+                    row.push(input.id);
+                    cell.appendChild(input);
+                    tableRow.appendChild(cell);
+                }
+                initialTable.push(row);
+                table.appendChild(tableRow);
+            }
+            tableContainer.appendChild(table);
+        }
+
+        // Function to handle checkbox click for a column
+        function handleColumnCheckboxClick(colIndex) {
+            // If the checkbox is checked, find matching values in secondary tables
+            if (document.getElementById(`removeCol${colIndex}`).checked) {
+                filterSecondaryTablesByColumn(colIndex);
+            }
+        }
+
+        // Function to filter the secondary tables based on the column
+        function filterSecondaryTablesByColumn(colIndex) {
+            const initialTableValues = getInitialTableValues();  // Get values from the primary table
+
+            const primaryColumnValues = initialTableValues.map(row => row[colIndex]);  // Get values in the selected column
+            console.log("Primary column values: ", primaryColumnValues);
+
+            let filteredTables = randomTablesData.filter(table => {
+                return !table.some(row => primaryColumnValues.includes(row[colIndex]));
+            });
+
+            // Display the filtered tables
             let randomTablesContainer = document.getElementById('randomTablesContainer');
             randomTablesContainer.innerHTML = ''; // Clear previous tables
 
-            // Display the primary table with name
-            if (primaryTable && primaryTable.length > 0) {
-                const primaryTableName = `Primary Table (ID: ${primaryTableId})`;
-                displayTableName(primaryTableName, randomTablesContainer); // Display primary table name
-                displayPrimaryTableWithCheckboxes(primaryTable, randomTablesContainer, retrievedTables); // Display the primary table with checkboxes
-            }
-
-            // Display each secondary table with name
-            if (Array.isArray(retrievedTables)) {
-                retrievedTables.forEach((table, index) => {
-                    const secondaryTableName = `Secondary Table ${index + 1}`;
-                    displayTableName(secondaryTableName, randomTablesContainer); // Display secondary table name
-                    displayTable(table, randomTablesContainer, `secondaryTable-${index}`); // Display each secondary table
-                });
-            } else {
-                console.warn('No secondary tables found.');
-            }
-
-            alert('Tables retrieved successfully!');
-        })
-        .catch((error) => {
-            console.error('Error retrieving tables:', error);
-            alert('Error retrieving secondary tables.');
-        });
-    }
-
-    // Function to display the primary table with checkboxes
-    function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
-        const tableElement = document.createElement('table');
-        tableElement.classList.add('primary-table');
-
-        table.forEach((row, rowIndex) => {
-            const rowElement = document.createElement('tr');
-            row.forEach((cell, colIndex) => {
-                const cellElement = document.createElement('td');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-
-                // Attach event listener for checkbox click
-                checkbox.addEventListener('click', () => {
-                    filterSecondaryTablesByPrimaryColumnValue(colIndex, cell, secondaryTables);
-                });
-
-                cellElement.innerText = cell;
-                cellElement.prepend(checkbox); // Add checkbox before the cell content
-                rowElement.appendChild(cellElement);
+            filteredTables.forEach((table, index) => {
+                displayTable(table, randomTablesContainer, `filteredTable-${index}`);
             });
-            tableElement.appendChild(rowElement);
-        });
 
-        container.appendChild(tableElement);
-    }
+            randomTablesData = filteredTables;  // Update the secondary tables to the filtered ones
+        }
 
-    // Function to filter secondary tables based on clicked column values in the primary table
-    function filterSecondaryTablesByPrimaryColumnValue(colIndex, cellValue, secondaryTables) {
-        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-            const tableId = `secondaryTable-${secondaryIndex}`;
-            const secondaryTableElement = document.getElementById(tableId);
-
-            let hasMatchingColumn = false;
-
-            // Check if any row in the secondary table contains the same value in the clicked column
-            secondaryTable.forEach(row => {
-                if (row[colIndex] === cellValue) {
-                    hasMatchingColumn = true;
+        // Function to get the values from the initial table
+        function getInitialTableValues() {
+            let tableValues = [];
+            for (let i = 0; i < initialTable.length; i++) {
+                let rowValues = [];
+                for (let j = 0; j < initialTable[i].length; j++) {
+                    let cellValue = document.getElementById(initialTable[i][j]).value || initialTable[i][j];
+                    rowValues.push(cellValue);
                 }
-            });
-
-            // If there is a match, remove the table from the DOM
-            if (hasMatchingColumn) {
-                secondaryTableElement.remove();
+                tableValues.push(rowValues);
             }
-        });
-    }
+            return tableValues;
+        }
 
-    // Function to display a table name above the table
-    function displayTableName(tableName, container) {
-        const nameElement = document.createElement('h4');
-        nameElement.innerText = tableName;
-        container.appendChild(nameElement);
-    }
+        // Function to generate random tables with random rows but the same columns
+        function generateRandomTables() {
+            const randomRows = parseInt(document.getElementById('randomRows').value);
+            const numTables = parseInt(document.getElementById('numTables').value);
+            const initialTableValues = getInitialTableValues();  // Get the values from the initial table
+            const totalRows = initialTableValues.length;  // Number of rows in the primary table
 
-    // Function to display a secondary table
-    function displayTable(table, container, tableId) {
-        const tableElement = document.createElement('table');
-        tableElement.id = tableId;
-        table.forEach((row, rowIndex) => {
-            const rowElement = document.createElement('tr');
-            row.forEach((cell, colIndex) => {
-                const cellElement = document.createElement('td');
-                cellElement.innerText = cell;
-                rowElement.appendChild(cellElement);
-            });
-            tableElement.appendChild(rowElement);
-        });
-        container.appendChild(tableElement);
-    }
+            let randomTablesContainer = document.getElementById('randomTablesContainer');
+            randomTablesContainer.innerHTML = ''; // Clear previous tables
+            randomTablesData = []; // Reset random tables data
+
+            for (let i = 0; i < numTables; i++) {
+                let selectedRows = getRandomSelection(totalRows, randomRows);  // Random rows
+
+                let randomTable = [];
+                for (let row of selectedRows) {
+                    randomTable.push([...initialTableValues[row]]);  // Keep the columns intact
+                }
+
+                randomTablesData.push(randomTable);  // Store the table data
+                displayTable(randomTable, randomTablesContainer);  // Display the table
+            }
+        }
+
+        // Helper function to generate unique random row indices
+        function getRandomSelection(total, count) {
+            let selected = [];
+            while (selected.length < count) {
+                let randomIndex = Math.floor(Math.random() * total);
+                if (!selected.includes(randomIndex)) {
+                    selected.push(randomIndex);
+                }
+            }
+            return selected;
+        }
+
+        // Helper function to display the generated tables
+        function displayTable(tableData, container) {
+            let table = document.createElement('table');
+            for (let rowIndex = 0; rowIndex < tableData.length; rowIndex++) {
+                let tableRow = document.createElement('tr');
+                for (let colIndex = 0; colIndex < tableData[rowIndex].length; colIndex++) {
+                    let td = document.createElement('td');
+                    td.innerHTML = tableData[rowIndex][colIndex];
+                    td.id = `randomTable${rowIndex}${colIndex}`; // Assign unique ID for random table cells
+                    tableRow.appendChild(td);
+                }
+                table.appendChild(tableRow);
+            }
+            container.appendChild(table);
+        }
+
     </script>
+
 </body>
 </html>
