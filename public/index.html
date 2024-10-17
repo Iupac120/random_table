@@ -369,7 +369,7 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
         // Attach event listener for checkbox click
         checkbox.addEventListener('click', () => {
-            highlightCorrespondingData(rowIndex, secondaryTables, checkbox.checked);
+            highlightCorrespondingData(row, secondaryTables, checkbox.checked);
         });
 
         checkboxCell.appendChild(checkbox);
@@ -389,9 +389,7 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 }
 
 // Function to highlight corresponding data in the secondary tables
-function highlightCorrespondingData(rowIndex, secondaryTables, isChecked) {
-    const primaryRowValues = initialTable[rowIndex]; // Assuming primaryRowValues are directly the row data
-
+function highlightCorrespondingData(selectedRowValues, secondaryTables, isChecked) {
     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
         const tableId = `secondaryTable-${secondaryIndex}`;
         const secondaryTableElement = document.getElementById(tableId);
@@ -402,7 +400,8 @@ function highlightCorrespondingData(rowIndex, secondaryTables, isChecked) {
 
                 // If checked, hide matching rows
                 if (isChecked) {
-                    if (primaryRowValues.some(value => secondaryRowValues.includes(value))) {
+                    // Check if any value from the primary row is present in the secondary row
+                    if (selectedRowValues.some(value => secondaryRowValues.includes(value))) {
                         secondaryRow.style.display = 'none'; // Hide matching rows
                     }
                 } else {
