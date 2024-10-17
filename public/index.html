@@ -347,32 +347,41 @@ function retrieveSecondaryTables() {
         });
 }
 
-// Function to display the primary table with checkboxes
+// Function to display the primary table with checkboxes outside cells
 function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
     const tableElement = document.createElement('table');
     tableElement.classList.add('primary-table');
 
+    // Create a header row for checkboxes
+    const headerRow = document.createElement('tr');
+    const checkboxHeaderCell = document.createElement('th');
+    checkboxHeaderCell.innerText = 'Select';
+    headerRow.appendChild(checkboxHeaderCell);
+    tableElement.appendChild(headerRow);
+
     table.forEach((row, rowIndex) => {
         const rowElement = document.createElement('tr');
-        
-        // Create a checkbox outside the table cell
-        const checkboxContainer = document.createElement('td');
+
+        // Create checkbox cell
+        const checkboxCell = document.createElement('td');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
 
         // Attach event listener for checkbox click
         checkbox.addEventListener('click', () => {
-            highlightCorrespondingData(rowIndex, row, secondaryTables, checkbox.checked);
+            highlightCorrespondingData(rowIndex, secondaryTables, checkbox.checked);
         });
 
-        checkboxContainer.appendChild(checkbox);
-        rowElement.appendChild(checkboxContainer);
+        checkboxCell.appendChild(checkbox);
+        rowElement.appendChild(checkboxCell);
 
-        row.forEach((cell) => {
+        // Create cells for the row
+        row.forEach(cell => {
             const cellElement = document.createElement('td');
             cellElement.innerText = cell;
             rowElement.appendChild(cellElement);
         });
+        
         tableElement.appendChild(rowElement);
     });
 
@@ -380,30 +389,27 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 }
 
 // Function to highlight corresponding data in the secondary tables
-function highlightCorrespondingData(rowIndex, primaryRow, secondaryTables, isChecked) {
-    const primaryRowValues = primaryRow; // Get the values from the selected primary row
+function highlightCorrespondingData(rowIndex, secondaryTables, isChecked) {
+    const primaryRowValues = initialTable[rowIndex]; // Assuming primaryRowValues are directly the row data
 
     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
         const tableId = `secondaryTable-${secondaryIndex}`;
         const secondaryTableElement = document.getElementById(tableId);
 
         if (secondaryTableElement) {
-            let hideTable = true; // Assume we will hide the table unless we find a non-matching row
-            
             Array.from(secondaryTableElement.rows).forEach((secondaryRow) => {
                 const secondaryRowValues = Array.from(secondaryRow.cells).map((cell) => cell.innerText);
-                
-                // Check if any of the primary row values are present in the secondary row
+
+                // If checked, hide matching rows
                 if (isChecked) {
-                    // If there is a match, we do not want to hide the table
                     if (primaryRowValues.some(value => secondaryRowValues.includes(value))) {
-                        hideTable = false; // Found a match, don't hide the table
+                        secondaryRow.style.display = 'none'; // Hide matching rows
                     }
+                } else {
+                    // Restore all rows when unchecked
+                    secondaryRow.style.display = '';
                 }
             });
-
-            // Hide or show the secondary table based on matches
-            secondaryTableElement.style.display = hideTable && isChecked ? 'none' : ''; 
         }
     });
 }
@@ -432,6 +438,7 @@ function displayTableName(tableName, container) {
     tableNameElement.innerText = tableName;
     container.appendChild(tableNameElement);
 }
+
 
 
 //remove from the secondary table
