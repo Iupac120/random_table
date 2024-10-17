@@ -368,26 +368,50 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 }
 
 // Function to highlight corresponding data in the secondary tables
+// Function to highlight corresponding data in the secondary tables
 function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
-    secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-        const tableId = `secondaryTable-${secondaryIndex}`;
-        const secondaryTableElement = document.getElementById(tableId);
-
-        if (secondaryTableElement) {
-            const secondaryRow = secondaryTable[rowIndex];
-            if (secondaryRow) {
-                const secondaryCell = secondaryRow[colIndex];
-                if (secondaryCell) {
-                    const cellElement = secondaryTableElement.rows[rowIndex].cells[colIndex];
-                    if (isChecked) {
-                        cellElement.style.backgroundColor = 'yellow';  // Highlight if checked
-                    } else {
-                        cellElement.style.backgroundColor = '';  // Reset background if unchecked
-                    }
+    const container = document.getElementById('randomTablesContainer');
+    
+    if (isChecked) {
+        // Remove the secondary rows corresponding to the checked primary row
+        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
+            const tableId = `secondaryTable-${secondaryIndex}`;
+            const secondaryTableElement = document.getElementById(tableId);
+            
+            if (secondaryTableElement) {
+                // Remove the corresponding row from the secondary table
+                const secondaryRow = secondaryTable[rowIndex];
+                if (secondaryRow) {
+                    // Store the existing rows before removing
+                    const existingRows = Array.from(secondaryTableElement.rows).map(row => row.cloneNode(true));
+                    
+                    // Remove the row
+                    secondaryTableElement.deleteRow(rowIndex);
+                    
+                    // Optionally, store the remaining rows in a data structure if needed
+                    // For simplicity, you may not need to do this here
                 }
             }
-        }
-    });
+        });
+    } else {
+        // Restore the secondary rows when unchecked
+        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
+            const tableId = `secondaryTable-${secondaryIndex}`;
+            const secondaryTableElement = document.getElementById(tableId);
+            
+            if (secondaryTableElement) {
+                // Restore the previously removed row if it was removed
+                const newRow = secondaryTable[rowIndex];  // Get the original data of the row
+                if (newRow) {
+                    const rowElement = secondaryTableElement.insertRow(rowIndex);
+                    newRow.forEach(cellData => {
+                        const cellElement = rowElement.insertCell();
+                        cellElement.innerText = cellData; // Restore the cell content
+                    });
+                }
+            }
+        });
+    }
 }
 
 // Function to display a secondary table
