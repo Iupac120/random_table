@@ -369,7 +369,7 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
         // Attach event listener for checkbox click
         checkbox.addEventListener('click', () => {
-            highlightCorrespondingData(row, secondaryTables, checkbox.checked);
+            highlightCorrespondingTables(row, secondaryTables, checkbox.checked);
         });
 
         checkboxCell.appendChild(checkbox);
@@ -388,28 +388,29 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
     container.appendChild(tableElement);
 }
 
-// Function to highlight corresponding data in the secondary tables
-function highlightCorrespondingData(primaryRow, secondaryTables, isChecked) {
+// Function to hide entire secondary tables based on primary row values
+function highlightCorrespondingTables(primaryRow, secondaryTables, isChecked) {
     const primaryRowValues = primaryRow; // Get the values of the primary row
 
     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
         const tableId = `secondaryTable-${secondaryIndex}`;
         const secondaryTableElement = document.getElementById(tableId);
-
+        
         if (secondaryTableElement) {
-            Array.from(secondaryTableElement.rows).forEach((secondaryRow) => {
-                const secondaryRowValues = Array.from(secondaryRow.cells).map((cell) => cell.innerText);
+            // Check if any row in the secondary table matches the primary row values
+            const containsMatchingRow = secondaryTable.some(secondaryRow => 
+                primaryRowValues.every((value, index) => value === secondaryRow[index])
+            );
 
-                // If checked, hide matching rows
-                if (isChecked) {
-                    if (primaryRowValues.every((value, index) => value === secondaryRowValues[index])) {
-                        secondaryRow.style.display = 'none'; // Hide matching rows
-                    }
-                } else {
-                    // Restore all rows when unchecked
-                    secondaryRow.style.display = '';
+            if (isChecked) {
+                // If there is a match, hide the entire secondary table
+                if (containsMatchingRow) {
+                    secondaryTableElement.style.display = 'none'; // Hide the table
                 }
-            });
+            } else {
+                // Restore all tables when unchecked
+                secondaryTableElement.style.display = ''; // Show the table
+            }
         }
     });
 }
@@ -438,6 +439,7 @@ function displayTableName(tableName, container) {
     tableNameElement.innerText = tableName;
     container.appendChild(tableNameElement);
 }
+
 
 //remove from the secondary table
 
