@@ -45,6 +45,8 @@
     <button onclick="downloadDoc()">Download DOC</button>
     <button onclick="saveSecondaryTables()">Save Secondary Tables</button>
     <button onclick="retrieveSecondaryTables()">Retrieve Secondary Tables</button>
+    
+   
 
     <h3>Randomly Generated Tables</h3>
     <div id="randomTablesContainer"></div>
@@ -257,7 +259,7 @@ function getRandomSelection(total, count, excludedSet) {
     const primaryTable = getInitialTableValues();
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value); // Assuming you have an input for primaryTableId
     
-    console.log('Primary Table ID:', primaryTableId, typeof("type",primaryTableId));
+    console.log('Primary Table ID:', primaryTableId, typeof primaryTableId);
     console.log('Primary Table:', primaryTable)
     console.log('Secondary Tables:', secondaryTables),typeof("type",secondaryTables);
 
@@ -301,6 +303,8 @@ function getRandomSelection(total, count, excludedSet) {
 }
 
 // Function to retrieve secondary tables from the server
+//let initialTable = []; // Store the primary table values for tracking
+
 function retrieveSecondaryTables() {
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
@@ -339,7 +343,6 @@ function retrieveSecondaryTables() {
     });
 }
 
-
 // Function to display the primary table with checkboxes
 function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
     const tableElement = document.createElement('table');
@@ -347,6 +350,8 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
     table.forEach((row, rowIndex) => {
         const rowElement = document.createElement('tr');
+        initialTable[rowIndex] = row; // Store the current row values
+
         row.forEach((cell, colIndex) => {
             const cellElement = document.createElement('td');
             const checkbox = document.createElement('input');
@@ -369,23 +374,26 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
 // Function to highlight corresponding data in the secondary tables
 function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
+    const primaryRowValues = initialTable[rowIndex]; // Get the values of the selected primary row
+
     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
         const tableId = `secondaryTable-${secondaryIndex}`;
         const secondaryTableElement = document.getElementById(tableId);
-
+        
         if (secondaryTableElement) {
-            const secondaryRow = secondaryTable[rowIndex];
-            if (secondaryRow) {
-                const secondaryCell = secondaryRow[colIndex];
-                if (secondaryCell) {
-                    const cellElement = secondaryTableElement.rows[rowIndex].cells[colIndex];
-                    if (isChecked) {
-                        cellElement.style.backgroundColor = 'yellow';  // Highlight if checked
-                    } else {
-                        cellElement.style.backgroundColor = '';  // Reset background if unchecked
+            Array.from(secondaryTableElement.rows).forEach((secondaryRow, secondaryRowIndex) => {
+                const secondaryRowValues = Array.from(secondaryRow.cells).map(cell => cell.innerText);
+                
+                if (isChecked) {
+                    // Check if any of the primary row values are present in the secondary row
+                    if (primaryRowValues.some(value => secondaryRowValues.includes(value))) {
+                        secondaryRow.style.display = 'none'; // Hide matching rows
                     }
+                } else {
+                    // Show all rows when unchecked
+                    secondaryRow.style.display = '';
                 }
-            }
+            });
         }
     });
 }
@@ -414,7 +422,6 @@ function displayTableName(tableName, container) {
     tableNameElement.innerText = tableName;
     container.appendChild(tableNameElement);
 }
-
 
 //remove from the secondary table
 

@@ -350,8 +350,6 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
     table.forEach((row, rowIndex) => {
         const rowElement = document.createElement('tr');
-        initialTable[rowIndex] = row; // Store the current row values
-
         row.forEach((cell, colIndex) => {
             const cellElement = document.createElement('td');
             const checkbox = document.createElement('input');
@@ -359,7 +357,7 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
             // Attach event listener for checkbox click
             checkbox.addEventListener('click', () => {
-                highlightCorrespondingData(rowIndex, colIndex, secondaryTables, checkbox.checked);
+                highlightCorrespondingData(rowIndex, secondaryTables, checkbox.checked); // Pass rowIndex and secondaryTables
             });
 
             cellElement.innerText = cell;
@@ -373,21 +371,26 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 }
 
 // Function to highlight corresponding data in the secondary tables
-function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
-    const primaryRowValues = initialTable[rowIndex]; // Get the values of the selected primary row
+function highlightCorrespondingData(rowIndex, secondaryTables, isChecked) {
+    // Get the current row values from the primary table
+    const primaryRowValues = Array.from(document.querySelectorAll('.primary-table tr'))
+                                  .slice(rowIndex, rowIndex + 1) // Select the row
+                                  .map(row => Array.from(row.cells).map(cell => cell.innerText)); // Get cell values
 
     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
         const tableId = `secondaryTable-${secondaryIndex}`;
         const secondaryTableElement = document.getElementById(tableId);
         
         if (secondaryTableElement) {
-            Array.from(secondaryTableElement.rows).forEach((secondaryRow, secondaryRowIndex) => {
+            Array.from(secondaryTableElement.rows).forEach((secondaryRow) => {
                 const secondaryRowValues = Array.from(secondaryRow.cells).map(cell => cell.innerText);
                 
                 if (isChecked) {
                     // Check if any of the primary row values are present in the secondary row
-                    if (primaryRowValues.some(value => secondaryRowValues.includes(value))) {
+                    if (primaryRowValues[0].some(value => secondaryRowValues.includes(value))) {
                         secondaryRow.style.display = 'none'; // Hide matching rows
+                    } else {
+                        secondaryRow.style.display = ''; // Show non-matching rows
                     }
                 } else {
                     // Show all rows when unchecked
@@ -422,6 +425,7 @@ function displayTableName(tableName, container) {
     tableNameElement.innerText = tableName;
     container.appendChild(tableNameElement);
 }
+
 
 //remove from the secondary table
 
