@@ -45,6 +45,11 @@
     <button onclick="downloadDoc()">Download DOC</button>
     <button onclick="saveSecondaryTables()">Save Secondary Tables</button>
     <button onclick="retrieveSecondaryTables()">Retrieve Secondary Tables</button>
+    
+    <input type="number" id="primaryTableIdInput" placeholder="Enter Primary Table ID">
+    <button onclick="retrieveSecondaryTables()">Retrieve Tables</button>
+    <div id="randomTablesContainer"></div>
+
 
     <h3>Randomly Generated Tables</h3>
     <div id="randomTablesContainer"></div>
@@ -301,6 +306,8 @@ function getRandomSelection(total, count, excludedSet) {
 }
 
 // Function to retrieve secondary tables from the server
+//let initialTable = []; // Store the primary table values for tracking
+
 function retrieveSecondaryTables() {
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
@@ -339,7 +346,6 @@ function retrieveSecondaryTables() {
     });
 }
 
-
 // Function to display the primary table with checkboxes
 function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
     const tableElement = document.createElement('table');
@@ -347,6 +353,8 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
     table.forEach((row, rowIndex) => {
         const rowElement = document.createElement('tr');
+        initialTable[rowIndex] = row; // Store the current row values
+
         row.forEach((cell, colIndex) => {
             const cellElement = document.createElement('td');
             const checkbox = document.createElement('input');
@@ -368,50 +376,29 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 }
 
 // Function to highlight corresponding data in the secondary tables
-// Function to highlight corresponding data in the secondary tables
 function highlightCorrespondingData(rowIndex, colIndex, secondaryTables, isChecked) {
-    const container = document.getElementById('randomTablesContainer');
-    
-    if (isChecked) {
-        // Remove the secondary rows corresponding to the checked primary row
-        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-            const tableId = `secondaryTable-${secondaryIndex}`;
-            const secondaryTableElement = document.getElementById(tableId);
-            
-            if (secondaryTableElement) {
-                // Remove the corresponding row from the secondary table
-                const secondaryRow = secondaryTable[rowIndex];
-                if (secondaryRow) {
-                    // Store the existing rows before removing
-                    const existingRows = Array.from(secondaryTableElement.rows).map(row => row.cloneNode(true));
-                    
-                    // Remove the row
-                    secondaryTableElement.deleteRow(rowIndex);
-                    
-                    // Optionally, store the remaining rows in a data structure if needed
-                    // For simplicity, you may not need to do this here
+    const primaryRowValues = initialTable[rowIndex]; // Get the values of the selected primary row
+
+    secondaryTables.forEach((secondaryTable, secondaryIndex) => {
+        const tableId = `secondaryTable-${secondaryIndex}`;
+        const secondaryTableElement = document.getElementById(tableId);
+        
+        if (secondaryTableElement) {
+            Array.from(secondaryTableElement.rows).forEach((secondaryRow, secondaryRowIndex) => {
+                const secondaryRowValues = Array.from(secondaryRow.cells).map(cell => cell.innerText);
+                
+                if (isChecked) {
+                    // Check if any of the primary row values are present in the secondary row
+                    if (primaryRowValues.some(value => secondaryRowValues.includes(value))) {
+                        secondaryRow.style.display = 'none'; // Hide matching rows
+                    }
+                } else {
+                    // Show all rows when unchecked
+                    secondaryRow.style.display = '';
                 }
-            }
-        });
-    } else {
-        // Restore the secondary rows when unchecked
-        secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-            const tableId = `secondaryTable-${secondaryIndex}`;
-            const secondaryTableElement = document.getElementById(tableId);
-            
-            if (secondaryTableElement) {
-                // Restore the previously removed row if it was removed
-                const newRow = secondaryTable[rowIndex];  // Get the original data of the row
-                if (newRow) {
-                    const rowElement = secondaryTableElement.insertRow(rowIndex);
-                    newRow.forEach(cellData => {
-                        const cellElement = rowElement.insertCell();
-                        cellElement.innerText = cellData; // Restore the cell content
-                    });
-                }
-            }
-        });
-    }
+            });
+        }
+    });
 }
 
 // Function to display a secondary table
@@ -438,7 +425,6 @@ function displayTableName(tableName, container) {
     tableNameElement.innerText = tableName;
     container.appendChild(tableNameElement);
 }
-
 
 //remove from the secondary table
 
