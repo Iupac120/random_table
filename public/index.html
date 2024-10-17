@@ -51,6 +51,11 @@
     <h3>Randomly Generated Tables</h3>
     <div id="randomTablesContainer"></div>
 
+    <div>
+        <input type="text" id="primaryTableIdInput" placeholder="Enter Primary Table ID" />
+        <button onclick="retrieveSecondaryTables()">Fetch Tables</button>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.0.1/docx.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
@@ -304,43 +309,42 @@ function getRandomSelection(total, count, excludedSet) {
 
 // Function to retrieve secondary tables from the server
 //let initialTable = []; // Store the primary table values for tracking
-
 function retrieveSecondaryTables() {
     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
-    .then(response => response.json())
-    .then(data => {
-        const primaryTable = data.primary;  // Get the primary table directly
-        const retrievedTables = data.secondary;  // Get the secondary tables
+        .then(response => response.json())
+        .then(data => {
+            const primaryTable = data.primary;  // Get the primary table directly
+            const retrievedTables = data.secondary;  // Get the secondary tables
 
-        let randomTablesContainer = document.getElementById('randomTablesContainer');
-        randomTablesContainer.innerHTML = ''; // Clear previous tables
+            let randomTablesContainer = document.getElementById('randomTablesContainer');
+            randomTablesContainer.innerHTML = ''; // Clear previous tables
 
-        // Display the primary table with name
-        if (primaryTable && primaryTable.length > 0) {
-            const primaryTableName = `Primary Table (ID: ${primaryTableId})`;
-            displayTableName(primaryTableName, randomTablesContainer); // Display primary table name
-            displayPrimaryTableWithCheckboxes(primaryTable, randomTablesContainer, retrievedTables); // Display the primary table with checkboxes
-        }
+            // Display the primary table with name
+            if (primaryTable && primaryTable.length > 0) {
+                const primaryTableName = `Primary Table (ID: ${primaryTableId})`;
+                displayTableName(primaryTableName, randomTablesContainer); // Display primary table name
+                displayPrimaryTableWithCheckboxes(primaryTable, randomTablesContainer, retrievedTables); // Display the primary table with checkboxes
+            }
 
-        // Display each secondary table with name
-        if (Array.isArray(retrievedTables)) {
-            retrievedTables.forEach((table, index) => {
-                const secondaryTableName = `Secondary Table ${index + 1}`;
-                displayTableName(secondaryTableName, randomTablesContainer); // Display secondary table name
-                displayTable(table, randomTablesContainer, `secondaryTable-${index}`); // Display each secondary table
-            });
-        } else {
-            console.warn('No secondary tables found.');
-        }
+            // Display each secondary table with name
+            if (Array.isArray(retrievedTables)) {
+                retrievedTables.forEach((table, index) => {
+                    const secondaryTableName = `Secondary Table ${index + 1}`;
+                    displayTableName(secondaryTableName, randomTablesContainer); // Display secondary table name
+                    displayTable(table, randomTablesContainer, `secondaryTable-${index}`); // Display each secondary table
+                });
+            } else {
+                console.warn('No secondary tables found.');
+            }
 
-        alert('Tables retrieved successfully!');
-    })
-    .catch((error) => {
-        console.error('Error retrieving tables:', error);
-        alert('Error retrieving secondary tables.');
-    });
+            alert('Tables retrieved successfully!');
+        })
+        .catch((error) => {
+            console.error('Error retrieving tables:', error);
+            alert('Error retrieving secondary tables.');
+        });
 }
 
 // Function to display the primary table with checkboxes
@@ -350,18 +354,23 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 
     table.forEach((row, rowIndex) => {
         const rowElement = document.createElement('tr');
-        row.forEach((cell, colIndex) => {
+        
+        // Create a checkbox outside the table cell
+        const checkboxContainer = document.createElement('td');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+
+        // Attach event listener for checkbox click
+        checkbox.addEventListener('click', () => {
+            highlightCorrespondingData(rowIndex, row, secondaryTables, checkbox.checked);
+        });
+
+        checkboxContainer.appendChild(checkbox);
+        rowElement.appendChild(checkboxContainer);
+
+        row.forEach((cell) => {
             const cellElement = document.createElement('td');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-
-            // Attach event listener for checkbox click
-            checkbox.addEventListener('click', () => {
-                highlightCorrespondingData(rowIndex, secondaryTables, checkbox.checked); // Pass rowIndex and secondaryTables
-            });
-
             cellElement.innerText = cell;
-            cellElement.prepend(checkbox); // Add checkbox before the cell content
             rowElement.appendChild(cellElement);
         });
         tableElement.appendChild(rowElement);
@@ -371,32 +380,30 @@ function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
 }
 
 // Function to highlight corresponding data in the secondary tables
-function highlightCorrespondingData(rowIndex, secondaryTables, isChecked) {
-    // Get the current row values from the primary table
-    const primaryRowValues = Array.from(document.querySelectorAll('.primary-table tr'))
-                                  .slice(rowIndex, rowIndex + 1) // Select the row
-                                  .map(row => Array.from(row.cells).map(cell => cell.innerText)); // Get cell values
+function highlightCorrespondingData(rowIndex, primaryRow, secondaryTables, isChecked) {
+    const primaryRowValues = primaryRow; // Get the values from the selected primary row
 
     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
         const tableId = `secondaryTable-${secondaryIndex}`;
         const secondaryTableElement = document.getElementById(tableId);
-        
+
         if (secondaryTableElement) {
+            let hideTable = true; // Assume we will hide the table unless we find a non-matching row
+            
             Array.from(secondaryTableElement.rows).forEach((secondaryRow) => {
-                const secondaryRowValues = Array.from(secondaryRow.cells).map(cell => cell.innerText);
+                const secondaryRowValues = Array.from(secondaryRow.cells).map((cell) => cell.innerText);
                 
+                // Check if any of the primary row values are present in the secondary row
                 if (isChecked) {
-                    // Check if any of the primary row values are present in the secondary row
-                    if (primaryRowValues[0].some(value => secondaryRowValues.includes(value))) {
-                        secondaryRow.style.display = 'none'; // Hide matching rows
-                    } else {
-                        secondaryRow.style.display = ''; // Show non-matching rows
+                    // If there is a match, we do not want to hide the table
+                    if (primaryRowValues.some(value => secondaryRowValues.includes(value))) {
+                        hideTable = false; // Found a match, don't hide the table
                     }
-                } else {
-                    // Show all rows when unchecked
-                    secondaryRow.style.display = '';
                 }
             });
+
+            // Hide or show the secondary table based on matches
+            secondaryTableElement.style.display = hideTable && isChecked ? 'none' : ''; 
         }
     });
 }
