@@ -304,146 +304,12 @@ function getRandomSelection(total, count, excludedSet) {
     }
 }
 
-// Function to retrieve secondary tables from the server
-//let initialTable = []; // Store the primary table values for tracking
 
-
-
-// function retrieveSecondaryTables() {
-//     const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
-
-//     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
-//         .then(response => response.json())
-//         .then(data => {
-//             const primaryTable = data.primary;  // Get the primary table directly
-//             const retrievedTables = data.secondary;  // Get the secondary tables
-
-//             let randomTablesContainer = document.getElementById('randomTablesContainer');
-//             randomTablesContainer.innerHTML = ''; // Clear previous tables
-
-//             // Display the primary table with name
-//             if (primaryTable && primaryTable.length > 0) {
-//                 const primaryTableName = `Primary Table (ID: ${primaryTableId})`;
-//                 displayTableName(primaryTableName, randomTablesContainer); // Display primary table name
-//                 displayPrimaryTableWithCheckboxes(primaryTable, randomTablesContainer, retrievedTables); // Display the primary table with checkboxes
-//             }
-
-//             // Display each secondary table with name
-//             if (Array.isArray(retrievedTables)) {
-//                 retrievedTables.forEach((table, index) => {
-//                     const secondaryTableName = `Secondary Table ${index + 1}`;
-//                     displayTableName(secondaryTableName, randomTablesContainer); // Display secondary table name
-//                     displayTable(table, randomTablesContainer, `secondaryTable-${index}`); // Display each secondary table
-//                 });
-//             } else {
-//                 console.warn('No secondary tables found.');
-//             }
-
-//             alert('Tables retrieved successfully!');
-//         })
-//         .catch((error) => {
-//             console.error('Error retrieving tables:', error);
-//             alert('Error retrieving secondary tables.');
-//         });
-// }
-
-// // Function to display the primary table with checkboxes outside cells
-// function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
-//     const tableElement = document.createElement('table');
-//     tableElement.classList.add('primary-table');
-
-//     // Create a header row for checkboxes
-//     const headerRow = document.createElement('tr');
-//     const checkboxHeaderCell = document.createElement('th');
-//     checkboxHeaderCell.innerText = 'Select';
-//     headerRow.appendChild(checkboxHeaderCell);
-//     tableElement.appendChild(headerRow);
-
-//     table.forEach((row, rowIndex) => {
-//         const rowElement = document.createElement('tr');
-
-//         // Create checkbox cell
-//         const checkboxCell = document.createElement('td');
-//         const checkbox = document.createElement('input');
-//         checkbox.type = 'checkbox';
-
-//         // Attach event listener for checkbox click
-//         checkbox.addEventListener('click', () => {
-//             highlightCorrespondingTables(row, secondaryTables, checkbox.checked);
-//         });
-
-//         checkboxCell.appendChild(checkbox);
-//         rowElement.appendChild(checkboxCell);
-
-//         // Create cells for the row
-//         row.forEach(cell => {
-//             const cellElement = document.createElement('td');
-//             cellElement.innerText = cell;
-//             rowElement.appendChild(cellElement);
-//         });
-        
-//         tableElement.appendChild(rowElement);
-//     });
-
-//     container.appendChild(tableElement);
-// }
-
-// // Function to hide entire secondary tables based on primary row values
-// function highlightCorrespondingTables(primaryRow, secondaryTables, isChecked) {
-//     const primaryRowValues = primaryRow; // Get the values of the primary row
-
-//     secondaryTables.forEach((secondaryTable, secondaryIndex) => {
-//         const tableId = `secondaryTable-${secondaryIndex}`;
-//         const secondaryTableElement = document.getElementById(tableId);
-        
-//         if (secondaryTableElement) {
-//             // Check if any row in the secondary table matches the primary row values
-//             const containsMatchingRow = secondaryTable.some(secondaryRow => 
-//                 primaryRowValues.every((value, index) => value === secondaryRow[index])
-//             );
-
-//             if (isChecked) {
-//                 // If there is a match, hide the entire secondary table
-//                 if (containsMatchingRow) {
-//                     secondaryTableElement.style.display = 'none'; // Hide the table
-//                 }
-//             } else {
-//                 // Restore all tables when unchecked
-//                 secondaryTableElement.style.display = ''; // Show the table
-//             }
-//         }
-//     });
-// }
-
-// // Function to display a secondary table
-// function displayTable(table, container, tableId) {
-//     const tableElement = document.createElement('table');
-//     tableElement.id = tableId;  // Set unique ID for each secondary table
-
-//     table.forEach(row => {
-//         const rowElement = document.createElement('tr');
-//         row.forEach(cell => {
-//             const cellElement = document.createElement('td');
-//             cellElement.innerText = cell;
-//             rowElement.appendChild(cellElement);
-//         });
-//         tableElement.appendChild(rowElement);
-//     });
-
-//     container.appendChild(tableElement);
-// }
-
-// // Function to display table names
-// function displayTableName(tableName, container) {
-//     const tableNameElement = document.createElement('h3');
-//     tableNameElement.innerText = tableName;
-//     container.appendChild(tableNameElement);
-// }
 
 
 //remove from the secondary table
 function retrieveSecondaryTables() {
-    const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
+const primaryTableId = parseInt(document.getElementById('primaryTableIdInput').value);
 
     fetch(`https://random-backend-pzys.onrender.com/retrieve-secondary-tables/${primaryTableId}`)
         .then(response => response.json())
@@ -472,8 +338,8 @@ function retrieveSecondaryTables() {
                 console.warn('No secondary tables found.');
             }
 
-            // Add download button
-            addDownloadButton(primaryTable, retrievedTables);
+            // Add PDF download button
+            addDownloadPDFButton(primaryTable, retrievedTables);
 
             alert('Tables retrieved successfully!');
         })
@@ -483,62 +349,158 @@ function retrieveSecondaryTables() {
         });
 }
 
-// Function to add a download button
-function addDownloadButton(primaryTable, secondaryTables) {
+// Function to add a download PDF button
+function addDownloadPDFButton(primaryTable, secondaryTables) {
     const container = document.getElementById('randomTablesContainer');
     const downloadButton = document.createElement('button');
-    downloadButton.innerText = 'Download Visible Tables';
-    downloadButton.onclick = () => downloadTables(primaryTable, secondaryTables);
+    downloadButton.innerText = 'Download Visible Tables as PDF';
+    downloadButton.onclick = () => downloadPDF(primaryTable, secondaryTables);
     container.appendChild(downloadButton);
 }
 
-// Function to download the primary and visible secondary tables
-function downloadTables(primaryTable, secondaryTables) {
-    let visibleSecondaryTables = [];
+// Function to download visible tables as PDF
 
+// Function to download visible tables as PDF
+// function downloadPDF(primaryTable, secondaryTables) {
+//     const { jsPDF } = window.jspdf;
+//     const doc = new jsPDF();
+
+//     let yPosition = 10; // Start position for text in PDF
+
+    // Add primary table to PDF
+//     doc.text("Primary Table:", 10, yPosition);
+//     yPosition += 10;
+//     yPosition = addTableToPDF(doc, primaryTable, yPosition);
+
+//     // Add each visible secondary table to PDF
+//     secondaryTables.forEach((table, index) => {
+//         const tableId = `secondaryTable-${index}`;
+//         const tableElement = document.getElementById(tableId);
+
+//         // Check if the secondary table is visible and non-empty
+//         if (tableElement && tableElement.style.display !== 'none') {
+//             // Add the table number to the PDF
+//             yPosition += 10;
+//             doc.text(`Secondary Table ${index + 1}:`, 10, yPosition);
+//             yPosition += 10;
+
+//             // Add the table content
+//             yPosition = addTableToPDF(doc, table, yPosition);
+//         } else {
+//             // Add the table number, even if the table is hidden (but without content)
+//             yPosition += 10;
+//             doc.text(`Secondary Table ${index + 1}: (Hidden)`, 10, yPosition);
+//         }
+//     });
+
+//     // Save the PDF file
+//     doc.save('visible_tables.pdf');
+// }
+
+// // Function to add a table to the PDF
+// function addTableToPDF(doc, table, startY) {
+//     let yPosition = startY;
+
+//     // If the table is empty or hidden, skip adding rows
+//     if (table.length === 0) {
+//         return yPosition;
+//     }
+
+//     table.forEach((row) => {
+//         const rowText = row.join('   '); // Format each row
+//         doc.text(rowText, 10, yPosition);
+//         yPosition += 10; // Move to the next line
+//     });
+
+//     return yPosition;
+// }
+
+// Function to download visible tables as PDF with pagination
+// Function to download visible tables as PDF with pagination
+function downloadPDF(primaryTable, secondaryTables) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let yPosition = 10; // Start position for text in PDF
+    const pageHeight = doc.internal.pageSize.height; // Get page height
+
+    // Function to check if a new page is needed
+    function checkAddNewPage(currentYPosition) {
+        if (currentYPosition > pageHeight - 20) {
+            doc.addPage();
+            return 10; // Reset yPosition for new page
+        }
+        return currentYPosition;
+    }
+
+    // Add primary table to PDF
+    doc.text("Primary Table:", 10, yPosition);
+    yPosition += 10;
+    yPosition = addTableToPDF(doc, primaryTable, yPosition, pageHeight);
+
+    // Add each visible secondary table to PDF
     secondaryTables.forEach((table, index) => {
         const tableId = `secondaryTable-${index}`;
         const tableElement = document.getElementById(tableId);
 
-        // Check if the table is visible
+        // Check if the secondary table is visible and non-empty
         if (tableElement && tableElement.style.display !== 'none') {
-            visibleSecondaryTables.push(table);
+            // Check if new page is needed before adding the table number
+            yPosition = checkAddNewPage(yPosition);
+
+            // Add the table number to the PDF
+            doc.text(`Secondary Table ${index + 1}:`, 10, yPosition);
+            yPosition += 10;
+
+            // Add the table content
+            yPosition = addTableToPDF(doc, table, yPosition, pageHeight);
+        } else {
+            // Add the table number, even if the table is hidden (but without content)
+            yPosition = checkAddNewPage(yPosition);
+            doc.text(`Secondary Table ${index + 1}: (Hidden)`, 10, yPosition);
+            yPosition += 10;
         }
     });
 
-    // Combine the primary table and visible secondary tables into CSV format
-    const csvData = convertToCSV(primaryTable, visibleSecondaryTables);
-
-    // Create a blob and download the CSV file
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', 'tables.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Save the PDF file
+    doc.save('visible_tables.pdf');
 }
 
-// Function to convert the primary and secondary tables into CSV format
-function convertToCSV(primaryTable, secondaryTables) {
-    let csvContent = '';
+// Function to add a table to the PDF with pagination
+function addTableToPDF(doc, table, startY, pageHeight) {
+    let yPosition = startY;
 
-    // Add primary table to CSV
-    csvContent += 'Primary Table\n';
-    primaryTable.forEach(row => {
-        csvContent += row.join(',') + '\n';
+    // If the table is empty or hidden, skip adding rows
+    if (table.length === 0) {
+        return yPosition;
+    }
+
+    // Function to check if a new page is needed
+    function checkAddNewPage(currentYPosition) {
+        if (currentYPosition > pageHeight - 20) {
+            doc.addPage();
+            return 10; // Reset yPosition for new page
+        }
+        return currentYPosition;
+    }
+
+    table.forEach((row) => {
+        const rowText = row.join('   '); // Format each row
+
+        // Check if new page is needed before adding the row
+        yPosition = checkAddNewPage(yPosition);
+
+        // Add the row text to the PDF
+        doc.text(rowText, 10, yPosition);
+        yPosition += 10; // Move to the next line
     });
 
-    // Add each secondary table to CSV
-    secondaryTables.forEach((table, index) => {
-        csvContent += `\nSecondary Table ${index + 1}\n`;
-        table.forEach(row => {
-            csvContent += row.join(',') + '\n';
-        });
-    });
-
-    return csvContent;
+    return yPosition;
 }
+
+
+
+
 
 // Function to display the primary table with checkboxes
 function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
@@ -629,6 +591,7 @@ function displayTableName(tableName, container) {
     tableNameElement.innerText = tableName;
     container.appendChild(tableNameElement);
 }
+
 
     </script>
 </body>
