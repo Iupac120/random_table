@@ -360,27 +360,63 @@ function addDownloadPDFButton(primaryTable, secondaryTables) {
 }
 
 // Function to download visible tables as PDF
+// function downloadPDF(primaryTable, secondaryTables) {
+//     const { jsPDF } = window.jspdf;
+//     const doc = new jsPDF();
+
+//     let visibleSecondaryTables = [];
+
+//     // Add primary table to PDF
+//     doc.text("Primary Table:", 10, 10);
+//     addTableToPDF(doc, primaryTable, 20);
+
+//     // Add each visible secondary table to PDF
+//     let yPosition = 40;
+//     secondaryTables.forEach((table, index) => {
+//         const tableId = `secondaryTable-${index}`;
+//         const tableElement = document.getElementById(tableId);
+
+//         if (tableElement && tableElement.style.display !== 'none') {
+//             visibleSecondaryTables.push(table);
+//             doc.text(`Secondary Table ${index + 1}:`, 10, yPosition);
+//             yPosition += 10;
+//             yPosition = addTableToPDF(doc, table, yPosition);
+//         }
+//     });
+
+//     // Save the PDF file
+//     doc.save('visible_tables.pdf');
+// }
+// Function to download visible tables as PDF
 function downloadPDF(primaryTable, secondaryTables) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    let visibleSecondaryTables = [];
+    let yPosition = 10; // Start position for text in PDF
 
     // Add primary table to PDF
-    doc.text("Primary Table:", 10, 10);
-    addTableToPDF(doc, primaryTable, 20);
+    doc.text("Primary Table:", 10, yPosition);
+    yPosition += 10;
+    yPosition = addTableToPDF(doc, primaryTable, yPosition);
 
     // Add each visible secondary table to PDF
-    let yPosition = 40;
     secondaryTables.forEach((table, index) => {
         const tableId = `secondaryTable-${index}`;
         const tableElement = document.getElementById(tableId);
 
+        // Check if the secondary table is visible and non-empty
         if (tableElement && tableElement.style.display !== 'none') {
-            visibleSecondaryTables.push(table);
+            // Add the table number to the PDF
+            yPosition += 10;
             doc.text(`Secondary Table ${index + 1}:`, 10, yPosition);
             yPosition += 10;
+
+            // Add the table content
             yPosition = addTableToPDF(doc, table, yPosition);
+        } else {
+            // Add the table number, even if the table is hidden (but without content)
+            yPosition += 10;
+            doc.text(`Secondary Table ${index + 1}: (Hidden)`, 10, yPosition);
         }
     });
 
@@ -392,6 +428,11 @@ function downloadPDF(primaryTable, secondaryTables) {
 function addTableToPDF(doc, table, startY) {
     let yPosition = startY;
 
+    // If the table is empty or hidden, skip adding rows
+    if (table.length === 0) {
+        return yPosition;
+    }
+
     table.forEach((row) => {
         const rowText = row.join('   '); // Format each row
         doc.text(rowText, 10, yPosition);
@@ -400,6 +441,19 @@ function addTableToPDF(doc, table, startY) {
 
     return yPosition;
 }
+
+// Function to add a table to the PDF
+// function addTableToPDF(doc, table, startY) {
+//     let yPosition = startY;
+
+//     table.forEach((row) => {
+//         const rowText = row.join('   '); // Format each row
+//         doc.text(rowText, 10, yPosition);
+//         yPosition += 10; // Move to the next line
+//     });
+
+//     return yPosition;
+// }
 
 // Function to display the primary table with checkboxes
 function displayPrimaryTableWithCheckboxes(table, container, secondaryTables) {
