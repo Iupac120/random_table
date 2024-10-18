@@ -417,6 +417,7 @@ function addDownloadPDFButton(primaryTable, secondaryTables) {
 // }
 
 // Function to download visible tables as PDF with pagination
+// Function to download visible tables as PDF with pagination
 function downloadPDF(primaryTable, secondaryTables) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -425,12 +426,12 @@ function downloadPDF(primaryTable, secondaryTables) {
     const pageHeight = doc.internal.pageSize.height; // Get page height
 
     // Function to check if a new page is needed
-    function checkAddNewPage(doc, yPosition, pageHeight) {
-        if (yPosition > pageHeight - 20) {
+    function checkAddNewPage(currentYPosition) {
+        if (currentYPosition > pageHeight - 20) {
             doc.addPage();
             return 10; // Reset yPosition for new page
         }
-        return yPosition;
+        return currentYPosition;
     }
 
     // Add primary table to PDF
@@ -446,7 +447,7 @@ function downloadPDF(primaryTable, secondaryTables) {
         // Check if the secondary table is visible and non-empty
         if (tableElement && tableElement.style.display !== 'none') {
             // Check if new page is needed before adding the table number
-            yPosition = checkAddNewPage(doc, yPosition, pageHeight);
+            yPosition = checkAddNewPage(yPosition);
 
             // Add the table number to the PDF
             doc.text(`Secondary Table ${index + 1}:`, 10, yPosition);
@@ -456,7 +457,7 @@ function downloadPDF(primaryTable, secondaryTables) {
             yPosition = addTableToPDF(doc, table, yPosition, pageHeight);
         } else {
             // Add the table number, even if the table is hidden (but without content)
-            yPosition = checkAddNewPage(doc, yPosition, pageHeight);
+            yPosition = checkAddNewPage(yPosition);
             doc.text(`Secondary Table ${index + 1}: (Hidden)`, 10, yPosition);
             yPosition += 10;
         }
@@ -475,11 +476,20 @@ function addTableToPDF(doc, table, startY, pageHeight) {
         return yPosition;
     }
 
+    // Function to check if a new page is needed
+    function checkAddNewPage(currentYPosition) {
+        if (currentYPosition > pageHeight - 20) {
+            doc.addPage();
+            return 10; // Reset yPosition for new page
+        }
+        return currentYPosition;
+    }
+
     table.forEach((row) => {
         const rowText = row.join('   '); // Format each row
 
         // Check if new page is needed before adding the row
-        yPosition = checkAddNewPage(doc, yPosition, pageHeight);
+        yPosition = checkAddNewPage(yPosition);
 
         // Add the row text to the PDF
         doc.text(rowText, 10, yPosition);
@@ -488,6 +498,9 @@ function addTableToPDF(doc, table, startY, pageHeight) {
 
     return yPosition;
 }
+
+
+
 
 
 // Function to display the primary table with checkboxes
