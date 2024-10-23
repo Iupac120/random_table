@@ -231,6 +231,18 @@ function loadPrimaryTable() {
     if (savedTableData) {
         let tableData = JSON.parse(savedTableData);
 
+        // Check if the table has been generated; if not, regenerate it with the correct dimensions
+        let numRows = tableData.length;
+        let numCols = tableData[0].length;
+        if (initialTable.length === 0) {
+            // Set the input values for rows and columns to match the saved table dimensions
+            document.getElementById('initialRows').value = numRows;
+            document.getElementById('initialCols').value = numCols;
+
+            // Generate the table structure
+            generateInitialTable();
+        }
+
         // Loop through the saved data and fill the table inputs
         for (let i = 0; i < tableData.length; i++) {
             for (let j = 0; j < tableData[i].length; j++) {
