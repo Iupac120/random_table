@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -254,7 +254,123 @@ function getRandomSelection(total, count, excludedSet) {
             });
         }
 
-        
+         -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table Generator with Save/Resume</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 10px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Random table ID</h2>
+    <label for="primaryTableIdInput">Primary Table ID:</label>
+    <input type="number" id="primaryTableIdInput" name="primaryTableIdInput" min="1" value="1">
+
+    <h2>Dynamic Table Generator</h2>
+
+    <label for="initialRows">Number of Rows:</label>
+    <input type="number" id="initialRows" name="initialRows" min="1" max="10" value="3">
+    <label for="initialCols">Number of Columns:</label>
+    <input type="number" id="initialCols" name="initialCols" min="1" max="30" value="10">
+    <button onclick="generateInitialTable()">Create Initial Table</button><br><br>
+
+    <div id="initialTableContainer"></div>
+    <button onclick="saveTableData()">Save Table Data</button>
+    <button onclick="clearTableData()">Clear Saved Data</button>
+
+    <script>
+        let initialTable = [];
+
+        // Function to generate the initial table with input fields and checkboxes for row/column removal
+        function generateInitialTable() {
+            const numRows = document.getElementById('initialRows').value;
+            const numCols = document.getElementById('initialCols').value;
+            initialTable = [];
+
+            let tableContainer = document.getElementById('initialTableContainer');
+            tableContainer.innerHTML = ''; // Clear previous table
+
+            let table = document.createElement('table');
+
+            // Generate the table with input fields
+            for (let i = 0; i < numRows; i++) {
+                let row = [];
+                let tableRow = document.createElement('tr');
+                for (let j = 0; j < numCols; j++) {
+                    let cell = document.createElement('td');
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `R${i}C${j}`; // Unique ID for each cell
+                    input.placeholder = `R${i+1}C${j+1}`;
+                    row.push(input.id);
+                    cell.appendChild(input);
+                    tableRow.appendChild(cell);
+                }
+                initialTable.push(row);
+                table.appendChild(tableRow);
+            }
+            tableContainer.appendChild(table);
+
+            // Try to load saved data from localStorage
+            loadTableData();
+        }
+
+        // Function to save the current state of the table to localStorage
+        function saveTableData() {
+            let tableData = {};
+            for (let i = 0; i < initialTable.length; i++) {
+                for (let j = 0; j < initialTable[i].length; j++) {
+                    let cellId = initialTable[i][j];
+                    let cellValue = document.getElementById(cellId).value || "";
+                    tableData[cellId] = cellValue; // Save the cell values
+                }
+            }
+            localStorage.setItem("primaryTableData", JSON.stringify(tableData));
+            alert("Table data saved!");
+        }
+
+        // Function to load the saved state of the table from localStorage
+        function loadTableData() {
+            let savedData = localStorage.getItem("primaryTableData");
+            if (savedData) {
+                let tableData = JSON.parse(savedData);
+                for (let cellId in tableData) {
+                    let cell = document.getElementById(cellId);
+                    if (cell) {
+                        cell.value = tableData[cellId]; // Populate the cell with saved data
+                    }
+                }
+            }
+        }
+
+        // Function to clear saved data from localStorage
+        function clearTableData() {
+            localStorage.removeItem("primaryTableData");
+            alert("Saved data cleared!");
+        }
+
+        // Load the table data when the page is refreshed or reopened
+        window.onload = function () {
+            loadTableData();
+        };
+    </script>
+</body>
+</html>
+     
        
 async function saveSecondaryTables() {
     const secondaryTables = randomTablesData;
