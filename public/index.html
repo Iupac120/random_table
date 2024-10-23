@@ -22,6 +22,10 @@
     <label for="primaryTableIdInput">Primary Table ID:</label>
     <input type="number" id="primaryTableIdInput" name="primaryTableIdInput" min="1" value="1">
 
+    <div id="initialTableContainer"></div>
+    <button onclick="saveTableData()">Save Table Data</button>
+    <button onclick="clearTableData()">Clear Saved Data</button>
+
 
     <h2>Dynamic Table Generator</h2>
 
@@ -189,6 +193,68 @@ function getRandomSelection(total, count, excludedSet) {
             }
             container.appendChild(table);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+// Function to save the current state of the table to localStorage
+function saveTableData() {
+            let tableData = {};
+            for (let i = 0; i < initialTable.length; i++) {
+                for (let j = 0; j < initialTable[i].length; j++) {
+                    let cellId = initialTable[i][j];
+                    let cellValue = document.getElementById(cellId).value || "";
+                    tableData[cellId] = cellValue; // Save the cell values
+                }
+            }
+            localStorage.setItem("primaryTableData", JSON.stringify(tableData));
+            alert("Table data saved!");
+        }
+
+        // Function to load the saved state of the table from localStorage
+        function loadTableData() {
+            let savedData = localStorage.getItem("primaryTableData");
+            if (savedData) {
+                let tableData = JSON.parse(savedData);
+                for (let cellId in tableData) {
+                    let cell = document.getElementById(cellId);
+                    if (cell) {
+                        cell.value = tableData[cellId]; // Populate the cell with saved data
+                    }
+                }
+            }
+        }
+
+        // Function to clear saved data from localStorage
+        function clearTableData() {
+            localStorage.removeItem("primaryTableData");
+            alert("Saved data cleared!");
+        }
+
+        // Load the table data when the page is refreshed or reopened
+        window.onload = function () {
+            loadTableData();
+        };
+
+
+
+
+
+
+
+
+
+
 
         // Function to download the random tables as a PDF file with tables filling the page
         function downloadRandomPDF() {
