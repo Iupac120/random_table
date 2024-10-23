@@ -33,6 +33,12 @@
 
     <div id="initialTableContainer"></div>
 
+
+    <button onclick="savePrimaryTable()">Save Table Data</button>
+    <button onclick="loadPrimaryTable()">Load Table Data</button>
+
+
+
     <h3>Random Secondary Tables Generator</h3>
     <label for="randomRows">Random Table Rows:</label>
     <input type="number" id="randomRows" name="randomRows" min="1" value="3">
@@ -189,6 +195,55 @@ function getRandomSelection(total, count, excludedSet) {
             }
             container.appendChild(table);
         }
+
+
+//save table in local storage
+function savePrimaryTable() {
+    let primaryTableId = document.getElementById('primaryTableIdInput').value;
+    let tableData = [];
+
+    // Loop through the table and store the data in an array
+    for (let i = 0; i < initialTable.length; i++) {
+        let rowData = [];
+        for (let j = 0; j < initialTable[i].length; j++) {
+            let cellValue = document.getElementById(initialTable[i][j]).value;
+            rowData.push(cellValue);
+        }
+        tableData.push(rowData);
+    }
+
+    // Store the table data in localStorage
+    let tableStorageKey = `primaryTableData_${primaryTableId}`;
+    localStorage.setItem(tableStorageKey, JSON.stringify(tableData));
+
+    alert('Table data saved successfully!');
+}
+
+
+//retrived table in local storage
+function loadPrimaryTable() {
+    let primaryTableId = document.getElementById('primaryTableIdInput').value;
+
+    // Retrieve the table data from localStorage
+    let tableStorageKey = `primaryTableData_${primaryTableId}`;
+    let savedTableData = localStorage.getItem(tableStorageKey);
+
+    if (savedTableData) {
+        let tableData = JSON.parse(savedTableData);
+
+        // Loop through the saved data and fill the table inputs
+        for (let i = 0; i < tableData.length; i++) {
+            for (let j = 0; j < tableData[i].length; j++) {
+                document.getElementById(initialTable[i][j]).value = tableData[i][j];
+            }
+        }
+
+        alert('Table data loaded successfully!');
+    } else {
+        alert('No saved data found for this table.');
+    }
+}
+
 
         // Function to download the random tables as a PDF file with tables filling the page
         function downloadRandomPDF() {
